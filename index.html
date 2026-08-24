@@ -640,17 +640,13 @@ const GOALS = {
 
 let selectedGoal = null;
 
-// Initialize on load
-window.addEventListener("DOMContentLoaded", () => {
-    renderInitial();
-});
-
 
 /* =========================================================
    INITIAL SCREEN
 ========================================================= */
 
 function renderInitial() {
+
     document.getElementById("app").innerHTML = `
         <div class="screen">
 
@@ -684,7 +680,7 @@ function renderInitial() {
 
                     ${Object.entries(GOALS).map(([key, goal]) => `
                         <button
-                            class="goal-btn ${selectedGoal === key ? 'active' : ''}"
+                            class="goal-btn"
                             data-goal="${key}"
                             onclick="selectGoal('${key}')"
                         >
@@ -706,7 +702,7 @@ function renderInitial() {
                 Analyze Hook
             </button>
 
-            <div id="error" class="error"></div>
+            <div id="error"></div>
 
         </div>
     `;
@@ -718,6 +714,7 @@ function renderInitial() {
 ========================================================= */
 
 function selectGoal(goal) {
+
     selectedGoal = goal;
 
     document.querySelectorAll(".goal-btn").forEach(btn => {
@@ -734,6 +731,7 @@ function selectGoal(goal) {
 ========================================================= */
 
 function normalize(text) {
+
     return text
         .toLowerCase()
         .replace(/[“”‘’]/g, "'")
@@ -819,6 +817,7 @@ const PATTERNS = {
     audience: [
         /\bfor women\b/,
         /\bfor men\b/,
+        /\bfor creators\b/,
         /\bfor creators\b/,
         /\bfor founders\b/,
         /\bfor entrepreneurs\b/,
@@ -962,14 +961,29 @@ const PATTERNS = {
 ========================================================= */
 
 function matchesAny(text, patterns) {
+
     return patterns.some(pattern => pattern.test(text));
 }
 
+
+function countMatches(text, patterns) {
+
+    return patterns.reduce(
+        (count, pattern) =>
+            count + (pattern.test(text) ? 1 : 0),
+        0
+    );
+}
+
+
 function getWords(text) {
+
     return text.split(/\s+/).filter(Boolean);
 }
 
+
 function hasSpecificity(text) {
+
     const wordCount = getWords(text).length;
 
     return {
@@ -984,59 +998,49 @@ function hasSpecificity(text) {
     };
 }
 
-function clamp(number, min, max) {
-    return Math.min(Math.max(number, min), max);
-}
-
-
-/* =========================================================
-   ANALYSIS EXECUTION
-========================================================= */
-
-function analyzeHook() {
-    const hookInput = document.getElementById("hookInput");
-    const errorEl = document.getElementById("error");
-    const text = hookInput ? hookInput.value.trim() : "";
-
-    if (!text) {
-        errorEl.textContent = "Please paste or type a hook to analyze.";
-        return;
-    }
-
-    if (!selectedGoal) {
-        errorEl.textContent = "Please select a goal for your hook.";
-        return;
-    }
-
-    errorEl.textContent = "";
-
-    const scores = analyzeFactors(text, selectedGoal);
-    const overallScore = Math.round(
-        (scores.curiosity + scores.specificity + scores.payoff + scores.clarity + scores.scroll) / 5
-    );
-
-    renderResults(text, selectedGoal, scores, overallScore);
-}
-
 
 /* =========================================================
    FACTOR ANALYSIS
 ========================================================= */
 
 function analyzeFactors(originalText, goal) {
+
     const text = normalize(originalText);
     const words = getWords(text);
+
     const specificity = hasSpecificity(text);
 
+    /* ---------- CURIOSITY ---------- */
+
     let curiosity = 25;
+
     if (matchesAny(text, PATTERNS.questions)) curiosity += 22;
     if (matchesAny(text, PATTERNS.curiosity)) curiosity += 20;
     if (matchesAny(text, PATTERNS.surprise)) curiosity += 15;
     if (/\b\d+\b/.test(text)) curiosity += 5;
     if (/\bbut\b|\bhowever\b|\binstead\b/.test(text)) curiosity += 10;
+
+    if (
+        /\bhere are\b.*\b\d+\b/.test(text) &&
+        !matchesAny(text, PATTERNS.curiosity)
+    ) {
+        curiosity -= 12;
+    }
+
+    if (
+        /\bthings you should know\b/.test(text) ||
+        /\bsome things\b/.test(text)
+    ) {
+        curiosity -= 20;
+    }
+
     curiosity = clamp(curiosity, 10, 96);
 
+
+    /* ---------- SPECIFICITY ---------- */
+
     let specificityScore = 20;
+
     if (specificity.number) specificityScore += 18;
     if (specificity.timeframe) specificityScore += 10;
     if (specificity.audience) specificityScore += 13;
@@ -1045,99 +1049,339 @@ function analyzeFactors(originalText, goal) {
     if (specificity.product) specificityScore += 5;
     if (specificity.credibility) specificityScore += 7;
     if (specificity.category) specificityScore += 5;
+
     if (words.length < 4) specificityScore -= 10;
+
     specificityScore = clamp(specificityScore, 8, 96);
 
+
+    /* ---------- PAYOFF ---------- */
+
     let payoff = 28;
+
     if (specificity.outcome) payoff += 18;
     if (specificity.problem) payoff += 13;
     if (matchesAny(text, PATTERNS.actionable)) payoff += 15;
     if (specificity.number) payoff += 6;
     if (specificity.audience) payoff += 5;
+
+    if (
+        /\bhere are\b/.test(text) &&
+        !specificity.outcome &&
+        !specificity.problem
+    ) {
+        payoff -= 10;
+    }
+
+    if (
+        /\bthings\b|\bsome things\b|\bstuff\b/.test(text)
+    ) {
+        payoff -= 15;
+    }
+
     payoff = clamp(payoff, 10, 96);
 
+
+    /* ---------- CLARITY ---------- */
+
     let clarity = 85;
+
     if (words.length > 25) clarity -= 20;
+    if (words.length > 35) clarity -= 20;
     if (words.length < 3) clarity -= 18;
+
+    if (
+        /\bthings\b|\bsomething\b|\bstuff\b|\bvarious\b|\bsome\b/.test(text)
+    ) {
+        clarity -= 12;
+    }
+
+    if (
+        /[,;:]{3,}/.test(originalText)
+    ) {
+        clarity -= 8;
+    }
+
     clarity = clamp(clarity, 15, 98);
 
+
+    /* ---------- SCROLL STOP ---------- */
+
     let scroll = 28;
+
     if (matchesAny(text, PATTERNS.questions)) scroll += 15;
     if (matchesAny(text, PATTERNS.surprise)) scroll += 16;
     if (matchesAny(text, PATTERNS.curiosity)) scroll += 15;
     if (matchesAny(text, PATTERNS.problems)) scroll += 10;
+    if (specificity.number) scroll += 7;
+    if (specificity.outcome) scroll += 8;
+    if (matchesAny(text, PATTERNS.opinions)) scroll += 12;
+    if (matchesAny(text, PATTERNS.debate)) scroll += 8;
+
+    if (
+        /\bhere are\b.*\b\d+\b/.test(text) &&
+        !matchesAny(text, PATTERNS.curiosity)
+    ) {
+        scroll -= 10;
+    }
+
     scroll = clamp(scroll, 10, 97);
 
+
+    /* ---------- GOAL ADJUSTMENT ---------- */
+
     const goalAdjustments = {
-        reach: { curiosity: 1.08, specificity: .92, payoff: .92, clarity: .95, scroll: 1.10 },
-        saves: { curiosity: .90, specificity: 1.12, payoff: 1.12, clarity: 1.0, scroll: .90 },
-        comments: { curiosity: 1.0, specificity: .95, payoff: .90, clarity: .95, scroll: 1.0 },
-        sales: { curiosity: .95, specificity: 1.02, payoff: 1.15, clarity: 1.05, scroll: .95 },
-        authority: { curiosity: .90, specificity: 1.12, payoff: 1.0, clarity: 1.05, scroll: .95 }
+
+        reach: {
+            curiosity: 1.08,
+            specificity: .92,
+            payoff: .92,
+            clarity: .95,
+            scroll: 1.10
+        },
+
+        saves: {
+            curiosity: .90,
+            specificity: 1.12,
+            payoff: 1.12,
+            clarity: 1.0,
+            scroll: .90
+        },
+
+        comments: {
+            curiosity: 1.0,
+            specificity: .95,
+            payoff: .90,
+            clarity: .95,
+            scroll: 1.0
+        },
+
+        sales: {
+            curiosity: .95,
+            specificity: 1.02,
+            payoff: 1.15,
+            clarity: 1.05,
+            scroll: .95
+        },
+
+        authority: {
+            curiosity: .90,
+            specificity: 1.12,
+            payoff: 1.0,
+            clarity: 1.05,
+            scroll: .95
+        }
     };
 
     const adjust = goalAdjustments[goal];
 
     return {
+
         curiosity: clamp(Math.round(curiosity * adjust.curiosity), 10, 98),
-        specificity: clamp(Math.round(specificityScore * adjust.specificity), 10, 98),
-        payoff: clamp(Math.round(payoff * adjust.payoff), 10, 98),
-        clarity: clamp(Math.round(clarity * adjust.clarity), 10, 98),
-        scroll: clamp(Math.round(scroll * adjust.scroll), 10, 98)
+
+        specificity: clamp(
+            Math.round(specificityScore * adjust.specificity),
+            10,
+            98
+        ),
+
+        payoff: clamp(
+            Math.round(payoff * adjust.payoff),
+            10,
+            98
+        ),
+
+        clarity: clamp(
+            Math.round(clarity * adjust.clarity),
+            10,
+            98
+        ),
+
+        scroll: clamp(
+            Math.round(scroll * adjust.scroll),
+            10,
+            98
+        )
+    };
+}
+
+
+function clamp(number, min, max) {
+
+    return Math.min(Math.max(number, min), max);
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function getStatus(score) {
+
+    if (score >= 72) {
+        return {
+            label: "Strong",
+            className: "strong"
+        };
+    }
+
+    if (score >= 48) {
+        return {
+            label: "Could Improve",
+            className: "medium"
+        };
+    }
+
+    return {
+        label: "Weak",
+        className: "weak"
     };
 }
 
 
 /* =========================================================
-   STATUS & EXPLANATIONS
+   FACTOR EXPLANATIONS
 ========================================================= */
 
-function getStatus(score) {
-    if (score >= 72) return { label: "Strong", className: "strong" };
-    if (score >= 48) return { label: "Could Improve", className: "medium" };
-    return { label: "Weak", className: "weak" };
-}
+function factorExplanation(name, score, text) {
 
-function factorExplanation(name, score) {
     const status = getStatus(score);
+
     const explanations = {
+
         curiosity: {
-            strong: "The hook creates a compelling reason to keep watching through tension or an information gap.",
-            medium: "There is some reason to continue, but it could create a sharper unresolved tension.",
-            weak: "The topic is stated, but leaves little unanswered mystery for the viewer."
+            strong:
+                "The hook creates a reason to keep watching through a question, tension, unexpected idea, or information gap.",
+
+            medium:
+                "There is some reason to continue, but the hook could create a stronger information gap or unresolved tension.",
+
+            weak:
+                "The topic is understandable, but there is little left unanswered. Give the viewer a specific reason to keep watching."
         },
+
         specificity: {
-            strong: "Contains concrete details like a number, audience, problem, or timeframe.",
-            medium: "Somewhat defined, but one more concrete detail would enhance it.",
-            weak: "Too broad. Add a concrete number, timeframe, or specific scenario."
+            strong:
+                "The hook contains concrete details such as a number, audience, problem, outcome, timeframe, or clear constraint.",
+
+            medium:
+                "The topic is somewhat defined, but one more concrete detail would make the promise more compelling.",
+
+            weak:
+                "The hook is broad. Add something concrete — a number, audience, constraint, timeframe, result, or specific problem."
         },
+
         payoff: {
-            strong: "Clearly communicates what useful result or insight the viewer will receive.",
-            medium: "The topic is clear, but the viewer has to infer the personal benefit.",
-            weak: "Make the explicit benefit or transformation immediately clear."
+            strong:
+                "The viewer can quickly understand what useful result, answer, transformation, or insight they will get.",
+
+            medium:
+                "The topic is clear, but the viewer has to infer why watching will benefit them.",
+
+            weak:
+                "The viewer knows the topic, but not what they will get from watching. Make the benefit or outcome explicit."
         },
+
         clarity: {
-            strong: "The core idea is easily understood without unnecessary clutter.",
-            medium: "Main idea works, but tightening the phrasing will help readability.",
-            weak: "Wording is vague or tangled. Simplify for instant comprehension."
+            strong:
+                "The idea can be understood quickly without unnecessary wording or complicated structure.",
+
+            medium:
+                "The main idea is understandable, but tightening the wording could make it easier to process while scrolling.",
+
+            weak:
+                "The wording is too vague, long, or structurally unclear. Simplify it so the idea lands immediately."
         },
+
         scroll: {
-            strong: "Contains strong pattern-interrupt elements to stop mindless scrolling.",
-            medium: "Has some stopping power, but could use a sharper claim or contrast.",
-            weak: "Resembles a generic intro. Inject surprise, tension, or a bold stance."
+            strong:
+                "The structure contains elements that can interrupt predictable scrolling, such as tension, specificity, surprise, or a strong problem.",
+
+            medium:
+                "The hook has some stopping power, but a stronger contrast, claim, question, or consequence could make the opening more distinctive.",
+
+            weak:
+                "The opening resembles a generic content introduction. Add tension, specificity, surprise, or a clear consequence."
         }
     };
+
     return explanations[name][status.className];
 }
 
+
+/* =========================================================
+   GOAL-SPECIFIC FEEDBACK
+========================================================= */
+
 function goalFeedback(text, goal, scores) {
-    if (goal === 'reach' && scores.curiosity < 55) {
-        return "For Reach, focus on widening the curiosity gap so viewers want to see what follows.";
-    }
-    if (goal === 'saves' && scores.specificity < 60) {
-        return "For Saves, make the practical takeaway or actionable framework crystal clear.";
-    }
-    return `This hook is structured reasonably well to support your target goal of ${GOALS[goal].name}.`;
+
+    const feedback = {
+
+        reach: () => {
+
+            if (scores.curiosity < 55) {
+                return "For Reach, the biggest opportunity is creating a stronger curiosity gap. Give viewers a reason to wonder what happens next rather than simply introducing the topic.";
+            }
+
+            if (scores.scroll < 60) {
+                return "For Reach, the structure could use a sharper pattern interrupt. A surprising opinion, contrast, mistake, or specific claim would make the opening less predictable.";
+            }
+
+            return "This is reasonably aligned with a Reach goal because it gives viewers a reason to continue and has some scroll-stopping structure.";
+        },
+
+        saves: () => {
+
+            if (scores.specificity < 60) {
+                return "For Saves, make the promise more practical. Add a number, constraint, audience, timeframe, or clearly defined problem so viewers know exactly what information they can take away.";
+            }
+
+            if (scores.payoff < 60) {
+                return "For Saves, make the practical payoff more obvious. Tell viewers what useful information or outcome they will leave with.";
+            }
+
+            return "This is well aligned with Saves because the hook communicates useful information rather than relying entirely on entertainment.";
+        },
+
+        comments: () => {
+
+            if (!matchesAny(text, PATTERNS.questions) &&
+                !matchesAny(text, PATTERNS.opinions) &&
+                !matchesAny(text, PATTERNS.debate)) {
+
+                return "For Comments, invite a reaction. A genuine question, opinion, disagreement, or relatable tension can give viewers something to respond to.";
+            }
+
+            return "The hook has elements that can encourage a reaction or opinion, which suits a Comments goal.";
+        },
+
+        sales: () => {
+
+            if (!matchesAny(text, PATTERNS.problems)) {
+                return "For Sales, connect the hook more directly to a problem the viewer wants solved. The product becomes more relevant when the opening establishes the problem first.";
+            }
+
+            if (scores.payoff < 65) {
+                return "For Sales, strengthen the benefit. Make the transformation or specific outcome more obvious so the viewer understands why the solution matters.";
+            }
+
+            return "The hook connects reasonably well to a Sales goal because it establishes a problem or benefit that can lead naturally into the offer.";
+        },
+
+        authority: () => {
+
+            if (!matchesAny(text, PATTERNS.credibility) &&
+                !matchesAny(text, PATTERNS.opinions)) {
+
+                return "For Authority, add a clear point of view, original insight, experience, evidence, or a specific observation. Expertise is easier to perceive when the hook says something concrete.";
+            }
+
+            return "The hook contains a point of view or credibility signal that can support an Authority positioning.";
+        }
+    };
+
+    return feedback[goal]();
 }
 
 
@@ -1146,83 +1390,491 @@ function goalFeedback(text, goal, scores) {
 ========================================================= */
 
 function generateHooks(original, goal) {
+
     const cleaned = original.trim();
-    let baseTopic = cleaned.replace(/^[.!?]+$/, "").trim();
-    if (!baseTopic) baseTopic = "this topic";
+
+    /*
+       These are transformations, not unrelated topic generators.
+       They preserve the user's subject wherever possible.
+    */
+
+    const numberMatch = cleaned.match(/\b\d+\b/);
+
+    let baseTopic = cleaned
+        .replace(/^here are\s+/i, "")
+        .replace(/^some things\s+/i, "")
+        .replace(/^things\s+/i, "")
+        .replace(/[.!?]+$/, "")
+        .trim();
+
+    if (!baseTopic) {
+        baseTopic = cleaned;
+    }
+
+
+    /* ---------- CURIOSITY ---------- */
+
+    let curiosityHook;
+
+    if (/^here are\s+\d+/i.test(cleaned)) {
+
+        curiosityHook =
+            `I expected to love these, but one of them completely surprised me: ${baseTopic.replace(/^\d+\s+/i, "")}.`;
+
+    } else if (matchesAny(normalize(cleaned), PATTERNS.problems)) {
+
+        curiosityHook =
+            `The reason ${baseTopic.toLowerCase()} may not be working the way you think.`;
+
+    } else {
+
+        curiosityHook =
+            `I wish I knew this before I started with ${baseTopic.toLowerCase()}.`;
+    }
+
+
+    /* ---------- SPECIFIC ---------- */
+
+    let specificHook;
+
+    if (numberMatch) {
+
+        specificHook =
+            `${numberMatch[0]} ${baseTopic.replace(
+                new RegExp("^" + numberMatch[0] + "\\s*", "i"),
+                ""
+            )} — what I'd actually recommend.`;
+
+    } else {
+
+        specificHook =
+            `The ${baseTopic.toLowerCase()} I'd actually recommend if you want a practical starting point.`;
+    }
+
+
+    /* ---------- CONTRARIAN ---------- */
+
+    let contrarianHook;
+
+    if (/skincare/i.test(cleaned)) {
+
+        contrarianHook =
+            `You probably don't need more skincare — you need to stop buying the wrong products.`;
+
+    } else if (/money|business|marketing|content|instagram/i.test(cleaned)) {
+
+        contrarianHook =
+            `You don't need more ${baseTopic.toLowerCase()} — you need to approach it differently.`;
+
+    } else {
+
+        contrarianHook =
+            `More ${baseTopic.toLowerCase()} isn't always better. Here's what I'd focus on instead.`;
+    }
+
 
     return [
-        { label: "Curiosity Angle", text: `I used to think standard approaches worked, until I discovered this one shift about ${baseTopic}.` },
-        { label: "Direct Benefit Angle", text: `How to master ${baseTopic} without making the common mistakes everyone repeats.` },
-        { label: "Authority Angle", text: `After testing multiple strategies regarding ${baseTopic}, here is what actually moves the needle.` }
+        {
+            label: "Curiosity",
+            text: curiosityHook
+        },
+        {
+            label: "Specific",
+            text: specificHook
+        },
+        {
+            label: "Contrarian / Pattern Interrupt",
+            text: contrarianHook
+        }
     ];
 }
 
 
 /* =========================================================
-   RENDER RESULTS SCREEN
+   OVERALL ASSESSMENT
 ========================================================= */
 
-function renderResults(originalText, goal, scores, overallScore) {
+function getOverall(scores) {
+
+    const values = Object.values(scores);
+
+    const average =
+        Math.round(
+            values.reduce((a, b) => a + b, 0) / values.length
+        );
+
+    if (average >= 78) {
+
+        return {
+            score: average,
+            title: "Strong hook",
+            text:
+                "This already has several strong structural elements. I'd focus on delivering on the promise rather than changing the hook just for the sake of optimization."
+        };
+
+    }
+
+    if (average >= 60) {
+
+        return {
+            score: average,
+            title: "Good foundation",
+            text:
+                "The idea is workable, but one or two structural improvements could make the opening more compelling and more clearly aligned with your goal."
+        };
+
+    }
+
+    if (average >= 40) {
+
+        return {
+            score: average,
+            title: "Needs sharpening",
+            text:
+                "The topic has potential, but the hook currently relies too much on simply introducing the subject. Give viewers a clearer reason to continue."
+        };
+
+    }
+
+    return {
+        score: average,
+        title: "Weak opening",
+        text:
+            "The topic may be useful, but the opening doesn't yet communicate a strong reason to stop, care, or continue watching."
+    };
+}
+
+
+/* =========================================================
+   WHAT'S WORKING
+========================================================= */
+
+function getWorking(scores, text) {
+
+    const strengths = [];
+
+    if (scores.clarity >= 70)
+        strengths.push("The core idea is easy to understand quickly.");
+
+    if (scores.curiosity >= 70)
+        strengths.push("The hook creates an information gap or open question.");
+
+    if (scores.specificity >= 70)
+        strengths.push("The hook gives the viewer concrete information.");
+
+    if (scores.payoff >= 70)
+        strengths.push("The viewer can understand the benefit of watching.");
+
+    if (scores.scroll >= 70)
+        strengths.push("The structure contains useful scroll-stopping elements.");
+
+    if (strengths.length === 0)
+        strengths.push("The topic itself is identifiable, giving you a clear foundation to strengthen.");
+
+    return strengths.slice(0, 2).join(" ");
+}
+
+
+/* =========================================================
+   WHAT'S HOLDING IT BACK
+========================================================= */
+
+function getWeakness(scores, text, goal) {
+
+    const weaknesses = [];
+
+    if (scores.curiosity < 55)
+        weaknesses.push("There isn't enough unanswered tension.");
+
+    if (scores.specificity < 55)
+        weaknesses.push("The idea is too broad.");
+
+    if (scores.payoff < 55)
+        weaknesses.push("The viewer's benefit isn't obvious.");
+
+    if (scores.scroll < 55)
+        weaknesses.push("The opening is relatively predictable.");
+
+    if (scores.clarity < 55)
+        weaknesses.push("The wording could be simplified.");
+
+    if (weaknesses.length === 0) {
+
+        return goalFeedback(
+            normalize(text),
+            goal,
+            scores
+        );
+    }
+
+    return weaknesses.slice(0, 2).join(" ") +
+        " " +
+        goalFeedback(normalize(text), goal, scores);
+}
+
+
+/* =========================================================
+   RENDER RESULTS
+========================================================= */
+
+function renderResults(hook, goal, scores) {
+
+    const overall = getOverall(scores);
+
     const factors = [
-        { key: "curiosity", name: "Curiosity Gap", score: scores.curiosity },
-        { key: "specificity", name: "Specificity", score: scores.specificity },
-        { key: "payoff", name: "Value Payoff", score: scores.payoff },
-        { key: "clarity", name: "Clarity", score: scores.clarity },
-        { key: "scroll", name: "Scroll-Stop", score: scores.scroll }
+        ["Curiosity", "curiosity"],
+        ["Specificity", "specificity"],
+        ["Payoff", "payoff"],
+        ["Clarity", "clarity"],
+        ["Scroll-stop potential", "scroll"]
     ];
 
-    const improved = generateHooks(originalText, goal);
+    const improvements = generateHooks(hook, goal);
 
     document.getElementById("app").innerHTML = `
+
         <div class="screen">
+
             <div class="results-header">
+
                 <div>
-                    <div class="eyebrow">Analysis Complete • ${GOALS[goal].icon} ${GOALS[goal].name}</div>
-                    <h2 class="results-title">Hook Breakdown</h2>
+                    <div class="eyebrow">Hook Diagnosis</div>
+
+                    <h2 class="results-title">
+                        ${escapeHTML(overall.title)}
+                    </h2>
                 </div>
+
                 <div class="overall">
-                    <span class="overall-score">${overallScore}</span>
-                    <span class="overall-label">Score</span>
+
+                    <span class="overall-score">
+                        ${overall.score}
+                    </span>
+
+                    <span class="overall-label">
+                        Structure
+                    </span>
+
                 </div>
+
             </div>
+
 
             <div class="factor-grid">
-                ${factors.map(f => {
-                    const st = getStatus(f.score);
+
+                ${factors.map(([label, key]) => {
+
+                    const score = scores[key];
+                    const status = getStatus(score);
+
                     return `
+
                         <div class="factor-card">
+
                             <div class="factor-top">
-                                <span class="factor-name">${f.name}</span>
-                                <span class="status ${st.className}">${st.label}</span>
+
+                                <span class="factor-name">
+                                    ${label}
+                                </span>
+
+                                <span class="status ${status.className}">
+                                    ${status.label}
+                                </span>
+
                             </div>
+
+                            <div class="factor-description">
+                                ${factorExplanation(key, score, hook)}
+                            </div>
+
                             <div class="meter">
-                                <div class="meter-fill" style="width: ${f.score}%"></div>
+                                <div
+                                    class="meter-fill"
+                                    style="width:${score}%"
+                                ></div>
                             </div>
-                            <div class="factor-description">${factorExplanation(f.key, f.score)}</div>
+
                         </div>
+
                     `;
+
                 }).join("")}
+
             </div>
+
 
             <div class="feedback-section">
+
                 <div class="feedback-card">
-                    <div class="feedback-heading">Strategic Feedback</div>
-                    <div class="feedback-text">${goalFeedback(originalText, goal, scores)}</div>
+
+                    <div class="feedback-heading">
+                        💡 What's Working
+                    </div>
+
+                    <div class="feedback-text">
+                        ${escapeHTML(
+                            getWorking(scores, hook)
+                        )}
+                    </div>
+
                 </div>
 
-                <div class="improved-heading">Refined Variations</div>
-                ${improved.map(item => `
-                    <div class="hook-option">
-                        <div class="option-label">${item.label}</div>
-                        <div class="option-text">${item.text}</div>
+
+                <div class="feedback-card">
+
+                    <div class="feedback-heading">
+                        ⚠️ What's Holding It Back
                     </div>
-                `).join("")}
+
+                    <div class="feedback-text">
+                        ${escapeHTML(
+                            getWeakness(
+                                scores,
+                                hook,
+                                goal
+                            )
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="feedback-card">
+
+                    <div class="feedback-heading">
+                        💡 Goal: ${GOALS[goal].icon} ${GOALS[goal].name}
+                    </div>
+
+                    <div class="feedback-text">
+                        ${escapeHTML(
+                            goalFeedback(
+                                normalize(hook),
+                                goal,
+                                scores
+                            )
+                        )}
+                    </div>
+
+                </div>
+
             </div>
 
-            <button class="reset-btn" onclick="renderInitial()">Test Another Hook</button>
+
+            <h3 class="improved-heading">
+                ✨ Try This Instead
+            </h3>
+
+
+            ${improvements.map(option => `
+
+                <div class="hook-option">
+
+                    <div class="option-label">
+                        ${escapeHTML(option.label)}
+                    </div>
+
+                    <div class="option-text">
+                        ${escapeHTML(option.text)}
+                    </div>
+
+                </div>
+
+            `).join("")}
+
+
+            <button
+                class="reset-btn"
+                onclick="resetWidget()"
+            >
+                ↻ Check Another Hook
+            </button>
+
         </div>
     `;
 }
+
+
+/* =========================================================
+   ANALYZE
+========================================================= */
+
+function analyzeHook() {
+
+    const input =
+        document.getElementById("hookInput");
+
+    const error =
+        document.getElementById("error");
+
+    const hook = input.value.trim();
+
+    error.innerHTML = "";
+
+    if (!hook) {
+
+        error.innerHTML =
+            `<div class="error">Paste a hook first.</div>`;
+
+        return;
+    }
+
+    if (!selectedGoal) {
+
+        error.innerHTML =
+            `<div class="error">Choose a goal first.</div>`;
+
+        return;
+    }
+
+    const scores =
+        analyzeFactors(
+            hook,
+            selectedGoal
+        );
+
+    renderResults(
+        hook,
+        selectedGoal,
+        scores
+    );
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetWidget() {
+
+    selectedGoal = null;
+
+    renderInitial();
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+renderInitial();
+
 </script>
+
 </body>
 </html>
