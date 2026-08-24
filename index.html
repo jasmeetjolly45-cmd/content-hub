@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* Notion Theme Integration */
         :root {
             --notion-bg: #ffffff;
             --beige-frame: #F4F0EA;
@@ -36,7 +35,6 @@
             padding: 10px;
         }
 
-        /* Scaling Wrapper to prevent mobile cutoff */
         .widget-scaler {
             width: 100%;
             max-width: 613px;
@@ -44,22 +42,18 @@
             position: relative;
         }
 
-        /* Outer Composition (613 x 447 ratio) */
         .widget-outer-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 613px;
             height: 447px;
-            background-image: url('background.png');
-            background-size: cover;
-            background-position: center;
             background-color: var(--beige-frame);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             transform-origin: top left;
+            border-radius: 16px;
         }
 
-        /* Inner Forest Green Interactive Widget */
         .widget-inner {
             position: absolute;
             left: 5.873%;
@@ -77,18 +71,12 @@
             overflow: hidden;
         }
 
-        /* Typography */
         .serif-title {
             font-family: 'Cormorant Garamond', serif;
             font-weight: 500;
             color: #F3E8D5;
         }
 
-        .sans-text {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Header */
         .widget-header {
             text-align: center;
             flex-shrink: 0;
@@ -108,7 +96,6 @@
             color: rgba(243, 232, 213, 0.75);
         }
 
-        /* Scrollable content areas */
         .scrollable-body {
             flex-grow: 1;
             overflow-y: auto;
@@ -127,7 +114,6 @@
             border-radius: 3px;
         }
 
-        /* Form Inputs Container */
         .form-group {
             display: flex;
             flex-direction: column;
@@ -165,7 +151,6 @@
             color: #7A9A8A;
         }
 
-        /* Goal Selector Grid */
         .goal-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -199,7 +184,6 @@
             font-weight: 600;
         }
 
-        /* Footer Actions */
         .widget-footer {
             flex-shrink: 0;
             display: flex;
@@ -239,11 +223,6 @@
             opacity: 0.92;
         }
 
-        .btn-main:active {
-            transform: scale(0.99);
-        }
-
-        /* Result View State */
         .result-state {
             display: none;
             flex-direction: column;
@@ -306,7 +285,6 @@
             color: #D4AF37;
             margin-bottom: 2px;
             font-size: 0.6rem;
-            letter-spacing: 0.3px;
         }
 
         .hooks-list {
@@ -363,13 +341,11 @@
         <div class="widget-outer-container">
             <div class="widget-inner">
                 
-                <!-- Header -->
                 <div class="widget-header">
                     <h1 class="serif-title widget-title">Hook Check</h1>
                     <p class="widget-subtitle">Evaluate your content hook against proven structural principles.</p>
                 </div>
 
-                <!-- Initial Input View -->
                 <div id="formView" class="scrollable-body">
                     <div class="form-group">
                         <label class="form-label">PASTE YOUR HOOK</label>
@@ -388,11 +364,8 @@
                     </div>
                 </div>
 
-                <!-- Result View -->
                 <div id="resultView" class="scrollable-body result-state">
-                    <div class="diagnosis-grid" id="diagnosisGrid">
-                        <!-- Populated dynamically -->
-                    </div>
+                    <div class="diagnosis-grid" id="diagnosisGrid"></div>
 
                     <div class="feedback-box">
                         <div class="feedback-title">🧪 HOOK DIAGNOSIS</div>
@@ -401,13 +374,10 @@
 
                     <div class="feedback-box" style="border-left-color: #6EEB83;">
                         <div class="feedback-title" style="color: #6EEB83;">✨ TRY THESE IMPROVED HOOKS</div>
-                        <div class="hooks-list" id="improvedHooksList">
-                            <!-- Populated dynamically -->
-                        </div>
+                        <div class="hooks-list" id="improvedHooksList"></div>
                     </div>
                 </div>
 
-                <!-- Footer Action -->
                 <div class="widget-footer">
                     <div id="errorMsg" class="error-message">Please enter a hook to analyze.</div>
                     <button id="mainBtn" class="btn-main">ANALYZE HOOK</button>
@@ -422,10 +392,10 @@
     </div>
 
     <script>
-        // Automatic scaling script to keep aspect ratio flawless on any screen size without scrolling
         function scaleWidget() {
             const scaler = document.getElementById('widgetScaler');
             const outer = document.querySelector('.widget-outer-container');
+            if(!scaler || !outer) return;
             const containerWidth = scaler.clientWidth;
             const scale = containerWidth / 613;
             outer.style.transform = `scale(${scale})`;
@@ -494,17 +464,14 @@
         function runAnalysis(text, goal) {
             const lower = text.toLowerCase();
             
-            // Heuristic checks
             const hasNumbers = /\d+/.test(text);
             const hasQuestion = text.includes('?');
             const hasCuriosityWords = /(stopped|wish|nobody|secret|reason|mistake|wrong|truth|why|how|never|always)/.test(lower);
             const hasContrast = /(instead|vs|compared|after|before|stop|start)/.test(lower);
             const isVague = text.length < 25 || (!hasNumbers && !hasCuriosityWords && !hasQuestion);
 
-            // Scores configuration
             let curiosity = hasCuriosityWords || hasQuestion ? "Moderate" : (hasContrast ? "Strong" : "Weak");
             let specificity = hasNumbers ? "Strong" : "Weak";
-            let payoff = text.length > 20 ? "Moderate" : "Weak";
             let scrollStop = (hasCuriosityWords || hasContrast) ? "Moderate" : "Weak";
 
             if (hasCuriosityWords && hasNumbers) {
@@ -512,7 +479,6 @@
                 scrollStop = "Strong";
             }
 
-            // Render Diagnosis Grid
             const diagnosisGrid = document.getElementById('diagnosisGrid');
             diagnosisGrid.innerHTML = `
                 <div class="diag-item">
@@ -529,16 +495,14 @@
                 </div>
             `;
 
-            // Build dynamic feedback text tailored to Goal and Heuristics
             let analysisHtml = "";
             if (isVague) {
-                analysisHtml = `<strong>What's holding it back (${goal}):</strong> Your hook states a generic premise without enough tension, numbers, or specific constraints. For a <strong>${goal}</strong> goal, viewers need an immediate reason to pause their scroll—such as a counter-intuitive insight, a concrete metric, or a clear problem statement.`;
+                analysisHtml = `<strong>What's holding it back (${goal}):</strong> Your hook states a generic premise without enough tension, numbers, or specific constraints. For a <strong>${goal}</strong> goal, viewers need an immediate reason to pause their scroll.`;
             } else {
-                analysisHtml = `<strong>What's working (${goal}):</strong> You have a recognizable structural anchor. To fully optimize for <strong>${goal}</strong>, lean further into sharpening the payoff so the reader immediately understands what value they gain by staying.`;
+                analysisHtml = `<strong>What's working (${goal}):</strong> You have a recognizable structural anchor. To fully optimize for <strong>${goal}</strong>, lean further into sharpening the payoff.`;
             }
             document.getElementById('feedbackAnalysisText').innerHTML = analysisHtml;
 
-            // Generate contextual improvements based on input content
             const cleanedText = text.replace(/["']/g, '');
             const improvedList = document.getElementById('improvedHooksList');
             
@@ -549,7 +513,7 @@
             if (goal === 'Saves') {
                 imp1 = `“Step-by-step framework: ${cleanedates(cleanedText)}”`;
                 imp2 = `“The ultimate checklist for ${cleanedText.toLowerCase()} (save this for later).”`;
-                imp3 = `“3 exact rules to master ${cleanedText.slice(0, 25)} without the guesswork.”`;
+                imp3 = `“3 exact rules to master ${cleanedText.slice(0, 25)} without guesswork.”`;
             } else if (goal === 'Authority') {
                 imp1 = `“After years of testing, here is the truth about ${cleanedText.toLowerCase()}.”`;
                 imp2 = `“Most people get ${cleanedText.toLowerCase()} completely wrong. Here is why.”`;
