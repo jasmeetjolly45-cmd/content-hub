@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hook Check</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Notion Theme Integration */
+        :root {
+            --notion-bg: #ffffff;
+            --beige-frame: #F4F0EA;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --notion-bg: #191919;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            background-color: var(--notion-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        /* Scaling Wrapper to prevent mobile cutoff */
+        .widget-scaler {
+            width: 100%;
+            max-width: 613px;
+            aspect-ratio: 613 / 447;
+            position: relative;
+        }
+
+        /* Outer Composition (613 x 447 ratio) */
+        .widget-outer-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 613px;
+            height: 447px;
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            background-color: var(--beige-frame);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transform-origin: top left;
+        }
+
+        /* Inner Forest Green Interactive Widget */
+        .widget-inner {
+            position: absolute;
+            left: 5.873%;
+            right: 5.873%;
+            top: 8.054%;
+            bottom: 8.054%;
+            background-color: #0D3829;
+            border-radius: 12px;
+            color: #F3E8D5;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: inset 0 0 0 1px rgba(243, 232, 213, 0.08);
+            overflow: hidden;
+        }
+
+        /* Typography */
+        .serif-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            color: #F3E8D5;
+        }
+
+        .sans-text {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Header */
+        .widget-header {
+            text-align: center;
+            flex-shrink: 0;
+            margin-bottom: 2px;
+        }
+
+        .widget-title {
+            font-size: 1.3rem;
+            letter-spacing: 0.3px;
+            margin-bottom: 1px;
+        }
+
+        .widget-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 0.7rem;
+            color: rgba(243, 232, 213, 0.75);
+        }
+
+        /* Scrollable content areas */
+        .scrollable-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 2px;
+            margin: 4px 0;
+        }
+
+        .scrollable-body::-webkit-scrollbar {
+            width: 3px;
+        }
+        .scrollable-body::-webkit-scrollbar-thumb {
+            background: rgba(243, 232, 213, 0.2);
+            border-radius: 3px;
+        }
+
+        /* Form Inputs Container */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .form-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.53rem;
+            font-weight: 600;
+            color: #D4AF37;
+            letter-spacing: 0.8px;
+        }
+
+        .form-textarea {
+            background: #123F30;
+            border: 1px solid rgba(243, 232, 213, 0.15);
+            border-radius: 6px;
+            padding: 8px 10px;
+            color: #F3E8D5;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            outline: none;
+            width: 100%;
+            resize: none;
+            height: 58px;
+            transition: border-color 0.2s;
+        }
+
+        .form-textarea:focus {
+            border-color: #D4AF37;
+        }
+
+        .form-textarea::placeholder {
+            color: #7A9A8A;
+        }
+
+        /* Goal Selector Grid */
+        .goal-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+
+        .goal-pill {
+            background: #123F30;
+            border: 1px solid rgba(243, 232, 213, 0.12);
+            color: #C2D0C9;
+            padding: 5px 2px;
+            border-radius: 5px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.58rem;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .goal-pill:hover {
+            border-color: rgba(243, 232, 213, 0.3);
+            color: #FFF;
+        }
+
+        .goal-pill.active {
+            background: #F3E8D5;
+            color: #0D3829;
+            border-color: #F3E8D5;
+            font-weight: 600;
+        }
+
+        /* Footer Actions */
+        .widget-footer {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .error-message {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.56rem;
+            color: #E0A96D;
+            text-align: center;
+            height: 12px;
+            visibility: hidden;
+        }
+
+        .error-message.visible {
+            visibility: visible;
+        }
+
+        .btn-main {
+            background-color: #D4AF37;
+            color: #0D3829;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-main:hover {
+            opacity: 0.92;
+        }
+
+        .btn-main:active {
+            transform: scale(0.99);
+        }
+
+        /* Result View State */
+        .result-state {
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease forwards;
+            gap: 6px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .diagnosis-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            background: #123F30;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(243, 232, 213, 0.08);
+        }
+
+        .diag-item {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            text-align: center;
+        }
+
+        .diag-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.52rem;
+            color: #9AB4A5;
+            font-weight: 500;
+        }
+
+        .diag-status {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+
+        .status-strong { color: #6EEB83; }
+        .status-moderate { color: #FFD166; }
+        .status-weak { color: #FF70A6; }
+
+        .feedback-box {
+            background: #123F30;
+            border-radius: 6px;
+            padding: 7px 9px;
+            border-left: 2px solid #D4AF37;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.62rem;
+            color: #D8E6DF;
+            line-height: 1.35;
+        }
+
+        .feedback-title {
+            font-weight: 600;
+            color: #D4AF37;
+            margin-bottom: 2px;
+            font-size: 0.6rem;
+            letter-spacing: 0.3px;
+        }
+
+        .hooks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hook-suggestion {
+            background: #123F30;
+            border: 1px solid rgba(243, 232, 213, 0.1);
+            border-radius: 5px;
+            padding: 6px 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hook-tag {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: #D4AF37;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .hook-text {
+            font-size: 0.62rem;
+            color: #F3E8D5;
+            font-style: italic;
+        }
+
+        .btn-secondary {
+            background-color: rgba(243, 232, 213, 0.1);
+            border: 1px solid rgba(243, 232, 213, 0.18);
+            color: #F3E8D5;
+            padding: 7px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(243, 232, 213, 0.18);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="widget-scaler" id="widgetScaler">
+        <div class="widget-outer-container">
+            <div class="widget-inner">
+                
+                <!-- Header -->
+                <div class="widget-header">
+                    <h1 class="serif-title widget-title">Hook Check</h1>
+                    <p class="widget-subtitle">Evaluate your content hook against proven structural principles.</p>
+                </div>
+
+                <!-- Initial Input View -->
+                <div id="formView" class="scrollable-body">
+                    <div class="form-group">
+                        <label class="form-label">PASTE YOUR HOOK</label>
+                        <textarea id="hookInput" class="form-textarea" placeholder="Paste your hook here… (e.g. Here are 5 skincare products I love)"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">WHAT'S YOUR GOAL?</label>
+                        <div class="goal-grid" id="goalGrid">
+                            <div class="goal-pill active" data-goal="Reach">🔥 Reach</div>
+                            <div class="goal-pill" data-goal="Saves">💾 Saves</div>
+                            <div class="goal-pill" data-goal="Comments">💬 Comments</div>
+                            <div class="goal-pill" data-goal="Sales">🛒 Sales</div>
+                            <div class="goal-pill" data-goal="Authority">👑 Authority</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result View -->
+                <div id="resultView" class="scrollable-body result-state">
+                    <div class="diagnosis-grid" id="diagnosisGrid">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <div class="feedback-box">
+                        <div class="feedback-title">🧪 HOOK DIAGNOSIS</div>
+                        <div id="feedbackAnalysisText">Loading analysis...</div>
+                    </div>
+
+                    <div class="feedback-box" style="border-left-color: #6EEB83;">
+                        <div class="feedback-title" style="color: #6EEB83;">✨ TRY THESE IMPROVED HOOKS</div>
+                        <div class="hooks-list" id="improvedHooksList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Action -->
+                <div class="widget-footer">
+                    <div id="errorMsg" class="error-message">Please enter a hook to analyze.</div>
+                    <button id="mainBtn" class="btn-main">ANALYZE HOOK</button>
+                    
+                    <div id="resultActionContainer" style="display: none;">
+                        <button id="resetBtn" class="btn-secondary">↻ Check Another Hook</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Automatic scaling script to keep aspect ratio flawless on any screen size without scrolling
+        function scaleWidget() {
+            const scaler = document.getElementById('widgetScaler');
+            const outer = document.querySelector('.widget-outer-container');
+            const containerWidth = scaler.clientWidth;
+            const scale = containerWidth / 613;
+            outer.style.transform = `scale(${scale})`;
+            scaler.style.height = `${447 * scale}px`;
+        }
+
+        window.addEventListener('resize', scaleWidget);
+        window.addEventListener('load', scaleWidget);
+        scaleWidget();
+
+        let selectedGoal = 'Reach';
+
+        document.querySelectorAll('.goal-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.goal-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                selectedGoal = pill.dataset.goal;
+                document.getElementById('errorMsg').classList.remove('visible');
+            });
+        });
+
+        const formView = document.getElementById('formView');
+        const resultView = document.getElementById('resultView');
+        const mainBtn = document.getElementById('mainBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const resultActionContainer = document.getElementById('resultActionContainer');
+        const hookInput = document.getElementById('hookInput');
+
+        hookInput.addEventListener('input', () => {
+            errorMsg.classList.remove('visible');
+        });
+
+        mainBtn.addEventListener('click', () => {
+            const hookText = hookInput.value.trim();
+            if (!hookText) {
+                errorMsg.textContent = "Please paste your hook before analyzing.";
+                errorMsg.classList.add('visible');
+                return;
+            }
+
+            runAnalysis(hookText, selectedGoal);
+
+            formView.style.display = 'none';
+            resultView.style.display = 'flex';
+            mainBtn.style.display = 'none';
+            resultActionContainer.style.display = 'block';
+            errorMsg.classList.remove('visible');
+        });
+
+        resetBtn.addEventListener('click', () => {
+            hookInput.value = '';
+            selectedGoal = 'Reach';
+            document.querySelectorAll('.goal-pill').forEach(p => {
+                if (p.dataset.goal === 'Reach') p.classList.add('active');
+                else p.classList.remove('active');
+            });
+
+            resultView.style.display = 'none';
+            resultActionContainer.style.display = 'none';
+            formView.style.display = 'flex';
+            mainBtn.style.display = 'block';
+            errorMsg.classList.remove('visible');
+        });
+
+        function runAnalysis(text, goal) {
+            const lower = text.toLowerCase();
+            
+            // Heuristic checks
+            const hasNumbers = /\d+/.test(text);
+            const hasQuestion = text.includes('?');
+            const hasCuriosityWords = /(stopped|wish|nobody|secret|reason|mistake|wrong|truth|why|how|never|always)/.test(lower);
+            const hasContrast = /(instead|vs|compared|after|before|stop|start)/.test(lower);
+            const isVague = text.length < 25 || (!hasNumbers && !hasCuriosityWords && !hasQuestion);
+
+            // Scores configuration
+            let curiosity = hasCuriosityWords || hasQuestion ? "Moderate" : (hasContrast ? "Strong" : "Weak");
+            let specificity = hasNumbers ? "Strong" : "Weak";
+            let payoff = text.length > 20 ? "Moderate" : "Weak";
+            let scrollStop = (hasCuriosityWords || hasContrast) ? "Moderate" : "Weak";
+
+            if (hasCuriosityWords && hasNumbers) {
+                curiosity = "Strong";
+                scrollStop = "Strong";
+            }
+
+            // Render Diagnosis Grid
+            const diagnosisGrid = document.getElementById('diagnosisGrid');
+            diagnosisGrid.innerHTML = `
+                <div class="diag-item">
+                    <span class="diag-label">Curiosity</span>
+                    <span class="diag-status ${getStatusClass(curiosity)}">${getEmoji(curiosity)} ${curiosity}</span>
+                </div>
+                <div class="diag-item">
+                    <span class="diag-label">Specificity</span>
+                    <span class="diag-status ${getStatusClass(specificity)}">${getEmoji(specificity)} ${specificity}</span>
+                </div>
+                <div class="diag-item">
+                    <span class="diag-label">Scroll-Stop</span>
+                    <span class="diag-status ${getStatusClass(scrollStop)}">${getEmoji(scrollStop)} ${scrollStop}</span>
+                </div>
+            `;
+
+            // Build dynamic feedback text tailored to Goal and Heuristics
+            let analysisHtml = "";
+            if (isVague) {
+                analysisHtml = `<strong>What's holding it back (${goal}):</strong> Your hook states a generic premise without enough tension, numbers, or specific constraints. For a <strong>${goal}</strong> goal, viewers need an immediate reason to pause their scroll—such as a counter-intuitive insight, a concrete metric, or a clear problem statement.`;
+            } else {
+                analysisHtml = `<strong>What's working (${goal}):</strong> You have a recognizable structural anchor. To fully optimize for <strong>${goal}</strong>, lean further into sharpening the payoff so the reader immediately understands what value they gain by staying.`;
+            }
+            document.getElementById('feedbackAnalysisText').innerHTML = analysisHtml;
+
+            // Generate contextual improvements based on input content
+            const cleanedText = text.replace(/["']/g, '');
+            const improvedList = document.getElementById('improvedHooksList');
+            
+            let imp1 = `“The exact reason why ${cleanedText.toLowerCase()}”`;
+            let imp2 = `“I tested ${cleanedText} for 30 days—here is what happened.”`;
+            let imp3 = `“Stop doing this if you care about ${cleanedText.slice(0, 20)}...”`;
+
+            if (goal === 'Saves') {
+                imp1 = `“Step-by-step framework: ${cleanedates(cleanedText)}”`;
+                imp2 = `“The ultimate checklist for ${cleanedText.toLowerCase()} (save this for later).”`;
+                imp3 = `“3 exact rules to master ${cleanedText.slice(0, 25)} without the guesswork.”`;
+            } else if (goal === 'Authority') {
+                imp1 = `“After years of testing, here is the truth about ${cleanedText.toLowerCase()}.”`;
+                imp2 = `“Most people get ${cleanedText.toLowerCase()} completely wrong. Here is why.”`;
+                imp3 = `“The professional blueprint behind ${cleanedText.slice(0, 25)}.”`;
+            } else if (goal === 'Sales') {
+                imp1 = `“How to fix ${cleanedText.toLowerCase()} in under 5 minutes a day.”`;
+                imp2 = `“The hidden cost of ignoring ${cleanedText.slice(0, 25)}.”`;
+                imp3 = `“Why your current approach to ${cleanedText.toLowerCase()} isn't working.”`;
+            }
+
+            improvedList.innerHTML = `
+                <div class="hook-suggestion">
+                    <div class="hook-tag">🔥 Curiosity Angle</div>
+                    <div class="hook-text">${imp1}</div>
+                </div>
+                <div class="hook-suggestion">
+                    <div class="hook-tag">🎯 Specific & Actionable</div>
+                    <div class="hook-text">${imp2}</div>
+                </div>
+                <div class="hook-suggestion">
+                    <div class="hook-tag">⚡ Pattern Interrupt</div>
+                    <div class="hook-text">${imp3}</div>
+                </div>
+            `;
+        }
+
+        function cleanedates(str) {
+            return str.replace(/here are \d+\s*/i, '').replace(/i love/i, '');
+        }
+
+        function getStatusClass(status) {
+            if (status === 'Strong') return 'status-strong';
+            if (status === 'Moderate') return 'status-moderate';
+            return 'status-weak';
+        }
+
+        function getEmoji(status) {
+            if (status === 'Strong') return '🟢';
+            if (status === 'Moderate') return '🟡';
+            return '🔴';
+        }
+    </script>
+</body>
+</html>
