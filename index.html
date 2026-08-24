@@ -1,584 +1,1880 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hook Check</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --page-bg: #121212;
-            --beige-frame: #F4F0EA;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        @media (prefers-color-scheme: light) {
-            :root {
-                --page-bg: #F9F8F6;
-            }
-        }
+<title>Hook Check</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        html, body {
-            background-color: var(--page-bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            padding: 10px;
-        }
+<style>
+/* =========================================================
+   NOTION BACKGROUND
+========================================================= */
 
-        /* Scaling Wrapper to prevent cutoff on small screens */
-        .widget-scaler {
-            width: 100%;
-            max-width: 613px;
-            aspect-ratio: 613 / 447;
-            position: relative;
-        }
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: #ffffff;
+}
 
-        /* Outer Composition (613 x 447 ratio) */
-        .widget-outer-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 613px;
-            height: 447px;
-            background-color: var(--beige-frame);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-            transform-origin: top left;
-            border-radius: 16px;
-        }
+@media (prefers-color-scheme: dark) {
+    html,
+    body {
+        background: #191919;
+    }
+}
 
-        /* Inner Forest Green Interactive Widget */
-        .widget-inner {
-            position: absolute;
-            left: 5.873%;
-            right: 5.873%;
-            top: 8.054%;
-            bottom: 8.054%;
-            background-color: #0D3829;
-            border-radius: 12px;
-            color: #F3E8D5;
-            padding: 16px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: inset 0 0 0 1px rgba(243, 232, 213, 0.08);
-            overflow: hidden;
-        }
+/* =========================================================
+   OUTER COMPOSITION
+   613 × 447
+========================================================= */
 
-        /* Typography */
-        .serif-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-weight: 500;
-            color: #F3E8D5;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        /* Header */
-        .widget-header {
-            text-align: center;
-            flex-shrink: 0;
-            margin-bottom: 2px;
-        }
+.hook-check-outer {
+    position: relative;
+    width: 100%;
+    max-width: 613px;
+    margin: 0 auto;
 
-        .widget-title {
-            font-size: 1.3rem;
-            letter-spacing: 0.3px;
-            margin-bottom: 1px;
-        }
+    aspect-ratio: 613 / 447;
 
-        .widget-subtitle {
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-            font-size: 0.7rem;
-            color: rgba(243, 232, 213, 0.75);
-        }
+    background-image: url("background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 
-        /* Scrollable body sections */
-        .scrollable-body {
-            flex-grow: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding-right: 2px;
-            margin: 4px 0;
-        }
+    overflow: hidden;
+}
 
-        .scrollable-body::-webkit-scrollbar {
-            width: 3px;
-        }
-        .scrollable-body::-webkit-scrollbar-thumb {
-            background: rgba(243, 232, 213, 0.2);
-            border-radius: 3px;
-        }
+/* =========================================================
+   INNER WIDGET
+   541 × 375
+   Percentage positioning preserves frame on mobile.
+========================================================= */
 
-        /* Form Inputs Container */
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
+.hook-check-inner {
+    position: absolute;
 
-        .form-label {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.53rem;
-            font-weight: 600;
-            color: #D4AF37;
-            letter-spacing: 0.8px;
-        }
+    left: 5.873%;
+    right: 5.873%;
+    top: 8.054%;
+    bottom: 8.054%;
 
-        .form-textarea {
-            background: #123F30;
-            border: 1px solid rgba(243, 232, 213, 0.15);
-            border-radius: 6px;
-            padding: 8px 10px;
-            color: #F3E8D5;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.7rem;
-            outline: none;
-            width: 100%;
-            resize: none;
-            height: 58px;
-            transition: border-color 0.2s;
-        }
+    background: #0b3426;
+    color: #f3e8d5;
 
-        .form-textarea:focus {
-            border-color: #D4AF37;
-        }
+    overflow: hidden;
 
-        .form-textarea::placeholder {
-            color: #7A9A8A;
-        }
+    border: 1px solid rgba(212, 175, 55, 0.28);
 
-        /* Goal Selector Grid */
-        .goal-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 4px;
-        }
+    font-family: "Inter", sans-serif;
+}
 
-        .goal-pill {
-            background: #123F30;
-            border: 1px solid rgba(243, 232, 213, 0.12);
-            color: #C2D0C9;
-            padding: 5px 2px;
-            border-radius: 5px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.58rem;
-            font-weight: 500;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            user-select: none;
-        }
+/* =========================================================
+   APP CONTAINER
+========================================================= */
 
-        .goal-pill:hover {
-            border-color: rgba(243, 232, 213, 0.3);
-            color: #FFF;
-        }
+.app {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
 
-        .goal-pill.active {
-            background: #F3E8D5;
-            color: #0D3829;
-            border-color: #F3E8D5;
-            font-weight: 600;
-        }
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212,175,55,.35) transparent;
+}
 
-        /* Footer Actions */
-        .widget-footer {
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
+.app::-webkit-scrollbar {
+    width: 5px;
+}
 
-        .error-message {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.56rem;
-            color: #E0A96D;
-            text-align: center;
-            height: 12px;
-            visibility: hidden;
-        }
+.app::-webkit-scrollbar-track {
+    background: transparent;
+}
 
-        .error-message.visible {
-            visibility: visible;
-        }
+.app::-webkit-scrollbar-thumb {
+    background: rgba(212,175,55,.35);
+}
 
-        .btn-main {
-            background-color: #D4AF37;
-            color: #0D3829;
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.68rem;
-            font-weight: 600;
-            letter-spacing: 0.8px;
-            cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s, transform 0.1s;
-        }
+/* =========================================================
+   SCREEN
+========================================================= */
 
-        .btn-main:hover {
-            opacity: 0.92;
-        }
+.screen {
+    min-height: 100%;
+    padding: clamp(20px, 4vw, 30px);
+}
 
-        .btn-main:active {
-            transform: scale(0.99);
-        }
+/* =========================================================
+   HEADER
+========================================================= */
 
-        /* Result View State */
-        .result-state {
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.3s ease forwards;
-            gap: 6px;
-        }
+.eyebrow {
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #d4af37;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+.title {
+    margin: 0;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(28px, 5vw, 38px);
+    line-height: .9;
+    font-weight: 600;
+    letter-spacing: -.5px;
+}
 
-        .diagnosis-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
-            background: #123F30;
-            padding: 6px;
-            border-radius: 6px;
-            border: 1px solid rgba(243, 232, 213, 0.08);
-        }
+.subtitle {
+    margin: 8px 0 0;
+    color: rgba(243,232,213,.7);
+    font-size: 10px;
+    line-height: 1.5;
+    max-width: 390px;
+}
 
-        .diag-item {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-            text-align: center;
-        }
+/* =========================================================
+   INPUT AREA
+========================================================= */
 
-        .diag-label {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.52rem;
-            color: #9AB4A5;
-            font-weight: 500;
-        }
+.form-section {
+    margin-top: 17px;
+}
 
-        .diag-status {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.6rem;
-            font-weight: 600;
-        }
+.label {
+    display: block;
+    margin-bottom: 6px;
 
-        .status-strong { color: #6EEB83; }
-        .status-moderate { color: #FFD166; }
-        .status-weak { color: #FF70A6; }
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 
-        .feedback-box {
-            background: #123F30;
-            border-radius: 6px;
-            padding: 7px 9px;
-            border-left: 2px solid #D4AF37;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.62rem;
-            color: #D8E6DF;
-            line-height: 1.35;
-        }
+    color: rgba(243,232,213,.7);
+    font-weight: 700;
+}
 
-        .feedback-title {
-            font-weight: 600;
-            color: #D4AF37;
-            margin-bottom: 2px;
-            font-size: 0.6rem;
-            letter-spacing: 0.3px;
-        }
+textarea {
+    width: 100%;
+    min-height: 82px;
+    resize: vertical;
 
-        .hooks-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
+    padding: 11px 12px;
 
-        .hook-suggestion {
-            background: #123F30;
-            border: 1px solid rgba(243, 232, 213, 0.1);
-            border-radius: 5px;
-            padding: 6px 8px;
-            font-family: 'Inter', sans-serif;
-        }
+    border: 1px solid rgba(243,232,213,.18);
+    border-radius: 5px;
 
-        .hook-tag {
-            font-size: 0.5rem;
-            font-weight: 600;
-            color: #D4AF37;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-            text-transform: uppercase;
-        }
+    background: #123f30;
+    color: #f3e8d5;
 
-        .hook-text {
-            font-size: 0.62rem;
-            color: #F3E8D5;
-            font-style: italic;
-        }
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    line-height: 1.5;
 
-        .btn-secondary {
-            background-color: rgba(243, 232, 213, 0.1);
-            border: 1px solid rgba(243, 232, 213, 0.18);
-            color: #F3E8D5;
-            padding: 7px;
-            border-radius: 6px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.65rem;
-            font-weight: 500;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-        }
+    outline: none;
 
-        .btn-secondary:hover {
-            background-color: rgba(243, 232, 213, 0.18);
-        }
-    </style>
+    transition: border-color .2s ease;
+}
+
+textarea::placeholder {
+    color: rgba(243,232,213,.38);
+}
+
+textarea:focus {
+    border-color: rgba(212,175,55,.65);
+}
+
+/* =========================================================
+   GOAL SELECTORS
+========================================================= */
+
+.goal-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+}
+
+.goal-btn {
+    min-width: 0;
+
+    padding: 8px 4px;
+
+    border: 1px solid rgba(243,232,213,.14);
+    border-radius: 4px;
+
+    background: #123f30;
+    color: rgba(243,232,213,.75);
+
+    cursor: pointer;
+
+    font-family: "Inter", sans-serif;
+    font-size: 8px;
+    font-weight: 600;
+
+    transition:
+        background .18s ease,
+        color .18s ease,
+        border-color .18s ease,
+        transform .18s ease;
+}
+
+.goal-btn:hover {
+    border-color: rgba(212,175,55,.5);
+    color: #f3e8d5;
+}
+
+.goal-btn.active {
+    background: rgba(212,175,55,.13);
+    border-color: #d4af37;
+    color: #f3e8d5;
+}
+
+.goal-icon {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 3px;
+}
+
+.goal-name {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.primary-btn {
+    width: 100%;
+    margin-top: 12px;
+
+    padding: 11px 14px;
+
+    border: 1px solid #d4af37;
+    border-radius: 4px;
+
+    background: #d4af37;
+    color: #0b3426;
+
+    font-family: "Inter", sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        background .18s ease,
+        color .18s ease,
+        transform .18s ease;
+}
+
+.primary-btn:hover {
+    background: #f0d77a;
+}
+
+.primary-btn:active {
+    transform: scale(.99);
+}
+
+.primary-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   RESULTS
+========================================================= */
+
+.results-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 15px;
+}
+
+.results-title {
+    margin: 0;
+
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(26px, 5vw, 34px);
+    line-height: .95;
+    font-weight: 600;
+}
+
+.overall {
+    flex-shrink: 0;
+
+    padding: 7px 9px;
+
+    border: 1px solid rgba(212,175,55,.4);
+    background: rgba(212,175,55,.08);
+
+    text-align: center;
+}
+
+.overall-score {
+    display: block;
+    font-size: 17px;
+    font-weight: 700;
+    color: #d4af37;
+}
+
+.overall-label {
+    display: block;
+    margin-top: 1px;
+
+    font-size: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    color: rgba(243,232,213,.55);
+}
+
+/* =========================================================
+   FACTOR CARDS
+========================================================= */
+
+.factor-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.factor-card {
+    padding: 9px;
+
+    border: 1px solid rgba(243,232,213,.11);
+    border-radius: 4px;
+
+    background: #123f30;
+}
+
+.factor-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.factor-name {
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.status {
+    font-size: 6px;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.status.strong {
+    color: #b7d7bd;
+}
+
+.status.medium {
+    color: #e2c978;
+}
+
+.status.weak {
+    color: #d99b8f;
+}
+
+.factor-description {
+    margin-top: 5px;
+
+    color: rgba(243,232,213,.58);
+
+    font-size: 7px;
+    line-height: 1.4;
+}
+
+.meter {
+    height: 3px;
+    margin-top: 7px;
+
+    background: rgba(243,232,213,.09);
+    overflow: hidden;
+}
+
+.meter-fill {
+    height: 100%;
+    background: #d4af37;
+}
+
+/* =========================================================
+   FEEDBACK
+========================================================= */
+
+.feedback-section {
+    margin-top: 12px;
+}
+
+.feedback-card {
+    padding: 11px;
+
+    margin-bottom: 7px;
+
+    border-left: 2px solid #d4af37;
+
+    background: rgba(18,63,48,.8);
+}
+
+.feedback-heading {
+    margin-bottom: 5px;
+
+    font-size: 8px;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    font-weight: 800;
+}
+
+.feedback-text {
+    color: rgba(243,232,213,.72);
+
+    font-size: 8px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   IMPROVED HOOKS
+========================================================= */
+
+.improved-heading {
+    margin: 14px 0 7px;
+
+    font-family: "Cormorant Garamond", serif;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.hook-option {
+    padding: 9px 10px;
+    margin-bottom: 6px;
+
+    border: 1px solid rgba(212,175,55,.18);
+    background: #123f30;
+}
+
+.option-label {
+    margin-bottom: 4px;
+
+    font-size: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    color: #d4af37;
+    font-weight: 800;
+}
+
+.option-text {
+    font-size: 8px;
+    line-height: 1.45;
+    color: #f3e8d5;
+}
+
+/* =========================================================
+   RESET
+========================================================= */
+
+.reset-btn {
+    width: 100%;
+
+    margin-top: 8px;
+    padding: 9px;
+
+    background: transparent;
+
+    border: 1px solid rgba(243,232,213,.18);
+    border-radius: 4px;
+
+    color: rgba(243,232,213,.7);
+
+    font-family: "Inter", sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: all .18s ease;
+}
+
+.reset-btn:hover {
+    border-color: #d4af37;
+    color: #d4af37;
+}
+
+/* =========================================================
+   EMPTY / ERROR
+========================================================= */
+
+.error {
+    margin-top: 7px;
+
+    color: #d99b8f;
+
+    font-size: 8px;
+}
+
+/* =========================================================
+   SMALL WIDTH ADJUSTMENTS
+========================================================= */
+
+@media (max-width: 430px) {
+
+    .screen {
+        padding: 18px;
+    }
+
+    .goal-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 3px;
+    }
+
+    .goal-btn {
+        padding: 7px 2px;
+        font-size: 6.5px;
+    }
+
+    .goal-icon {
+        font-size: 11px;
+    }
+
+    .factor-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 320px) {
+
+    .screen {
+        padding: 14px;
+    }
+
+    .title {
+        font-size: 27px;
+    }
+
+    .goal-icon {
+        font-size: 10px;
+    }
+
+    .goal-btn {
+        font-size: 6px;
+    }
+
+    .factor-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 </head>
+
 <body>
 
-    <div class="widget-scaler" id="widgetScaler">
-        <div class="widget-outer-container">
-            <div class="widget-inner">
-                
-                <!-- Header -->
-                <div class="widget-header">
-                    <h1 class="serif-title widget-title">Hook Check</h1>
-                    <p class="widget-subtitle">Evaluate your content hook against proven structural principles.</p>
-                </div>
+<div class="hook-check-outer">
 
-                <!-- Initial Input View -->
-                <div id="formView" class="scrollable-body">
-                    <div class="form-group">
-                        <label class="form-label">PASTE YOUR HOOK</label>
-                        <textarea id="hookInput" class="form-textarea" placeholder="Paste your hook here… (e.g. Here are 5 skincare products I love)"></textarea>
-                    </div>
+    <div class="hook-check-inner">
 
-                    <div class="form-group">
-                        <label class="form-label">WHAT'S YOUR GOAL?</label>
-                        <div class="goal-grid" id="goalGrid">
-                            <div class="goal-pill active" data-goal="Reach">🔥 Reach</div>
-                            <div class="goal-pill" data-goal="Saves">💾 Saves</div>
-                            <div class="goal-pill" data-goal="Comments">💬 Comments</div>
-                            <div class="goal-pill" data-goal="Sales">🛒 Sales</div>
-                            <div class="goal-pill" data-goal="Authority">👑 Authority</div>
-                        </div>
-                    </div>
-                </div>
+        <div class="app" id="app"></div>
 
-                <!-- Result View -->
-                <div id="resultView" class="scrollable-body result-state">
-                    <div class="diagnosis-grid" id="diagnosisGrid">
-                        <!-- Populated dynamically -->
-                    </div>
+    </div>
 
-                    <div class="feedback-box">
-                        <div class="feedback-title">🧪 HOOK DIAGNOSIS</div>
-                        <div id="feedbackAnalysisText">Loading analysis...</div>
-                    </div>
+</div>
 
-                    <div class="feedback-box" style="border-left-color: #6EEB83;">
-                        <div class="feedback-title" style="color: #6EEB83;">✨ TRY THESE IMPROVED HOOKS</div>
-                        <div class="hooks-list" id="improvedHooksList">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Footer Action -->
-                <div class="widget-footer">
-                    <div id="errorMsg" class="error-message">Please enter a hook to analyze.</div>
-                    <button id="mainBtn" class="btn-main">ANALYZE HOOK</button>
-                    
-                    <div id="resultActionContainer" style="display: none;">
-                        <button id="resetBtn" class="btn-secondary">↻ Check Another Hook</button>
-                    </div>
+<script>
+/* =========================================================
+   HOOK CHECK
+   Deterministic client-side hook analysis
+========================================================= */
+
+const GOALS = {
+    reach: {
+        icon: "🔥",
+        name: "Reach",
+        priorities: ["curiosity", "novelty", "surprise", "pattern", "emotion"]
+    },
+
+    saves: {
+        icon: "💾",
+        name: "Saves",
+        priorities: ["usefulness", "specificity", "actionable", "payoff"]
+    },
+
+    comments: {
+        icon: "💬",
+        name: "Comments",
+        priorities: ["opinion", "question", "debate", "relatable"]
+    },
+
+    sales: {
+        icon: "🛒",
+        name: "Sales",
+        priorities: ["problem", "benefit", "transformation", "product", "outcome"]
+    },
+
+    authority: {
+        icon: "👑",
+        name: "Authority",
+        priorities: ["expertise", "specificity", "opinion", "insight", "credibility"]
+    }
+};
+
+let selectedGoal = null;
+
+
+/* =========================================================
+   INITIAL SCREEN
+========================================================= */
+
+function renderInitial() {
+
+    document.getElementById("app").innerHTML = `
+        <div class="screen">
+
+            <div class="eyebrow">Content Strategy Utility</div>
+
+            <h1 class="title">Hook Check</h1>
+
+            <p class="subtitle">
+                Paste your hook and I'll break down what's working,
+                what's weak, and how to make it stronger.
+            </p>
+
+            <div class="form-section">
+
+                <label class="label">Your Hook</label>
+
+                <textarea
+                    id="hookInput"
+                    placeholder="Paste your hook here…"
+                    maxlength="500"
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-section">
+
+                <label class="label">What's Your Goal?</label>
+
+                <div class="goal-grid">
+
+                    ${Object.entries(GOALS).map(([key, goal]) => `
+                        <button
+                            class="goal-btn"
+                            data-goal="${key}"
+                            onclick="selectGoal('${key}')"
+                        >
+                            <span class="goal-icon">${goal.icon}</span>
+                            <span class="goal-name">${goal.name}</span>
+                        </button>
+                    `).join("")}
+
                 </div>
 
             </div>
+
+
+            <button
+                class="primary-btn"
+                id="analyzeBtn"
+                onclick="analyzeHook()"
+            >
+                Analyze Hook
+            </button>
+
+            <div id="error"></div>
+
         </div>
-    </div>
+    `;
+}
 
-    <script>
-        // Automatic scaling script to keep aspect ratio flawless on any screen size without scrolling
-        function scaleWidget() {
-            const scaler = document.getElementById('widgetScaler');
-            const outer = document.querySelector('.widget-outer-container');
-            if(!scaler || !outer) return;
-            const containerWidth = scaler.clientWidth;
-            const scale = containerWidth / 613;
-            outer.style.transform = `scale(${scale})`;
-            scaler.style.height = `${447 * scale}px`;
+
+/* =========================================================
+   GOAL SELECTION
+========================================================= */
+
+function selectGoal(goal) {
+
+    selectedGoal = goal;
+
+    document.querySelectorAll(".goal-btn").forEach(btn => {
+        btn.classList.toggle(
+            "active",
+            btn.dataset.goal === goal
+        );
+    });
+}
+
+
+/* =========================================================
+   NORMALIZATION
+========================================================= */
+
+function normalize(text) {
+
+    return text
+        .toLowerCase()
+        .replace(/[“”‘’]/g, "'")
+        .replace(/[^\w\s₹$%!?.,'’-]/gi, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+
+/* =========================================================
+   PATTERN LIBRARY
+========================================================= */
+
+const PATTERNS = {
+
+    curiosity: [
+        /\bwhy\b/,
+        /\bhow\b/,
+        /\bwhat\b/,
+        /\bthe reason\b/,
+        /\bhere's why\b/,
+        /\bnobody tells you\b/,
+        /\bno one tells you\b/,
+        /\bi stopped\b/,
+        /\bi quit\b/,
+        /\bi wish i knew\b/,
+        /\bi didn't expect\b/,
+        /\bi was wrong\b/,
+        /\bturns out\b/,
+        /\bsecret\b/,
+        /\btruth\b/,
+        /\bmistake\b/,
+        /\bmistakes\b/,
+        /\bsurprisingly\b/,
+        /\bbut\b/,
+        /\binstead\b/,
+        /\buntil\b/,
+        /\bbefore\b/,
+        /\bafter\b/,
+        /\bvs\b/,
+        /\bversus\b/,
+        /\breal reason\b/
+    ],
+
+    surprise: [
+        /\bactually\b/,
+        /\bbut\b/,
+        /\bnot\b/,
+        /\bnever\b/,
+        /\bwrong\b/,
+        /\bunexpected\b/,
+        /\bsurprising\b/,
+        /\bshocked\b/,
+        /\bturns out\b/,
+        /\bmost people\b/,
+        /\beveryone\b/,
+        /\bnobody\b/,
+        /\bno one\b/
+    ],
+
+    questions: [
+        /\?/,
+        /^(why|how|what|when|where|which|who)\b/
+    ],
+
+    numbers: [
+        /\b\d+\b/,
+        /\b\d+%\b/,
+        /₹\s?\d+/,
+        /\$\s?\d+/,
+        /\b\d+\s?(days?|weeks?|months?|years?|hours?|minutes?)\b/
+    ],
+
+    timeframes: [
+        /\b\d+\s?(days?|weeks?|months?|years?|hours?|minutes?)\b/,
+        /\btoday\b/,
+        /\bthis week\b/,
+        /\bthis month\b/,
+        /\bovernight\b/,
+        /\bin \d+\b/
+    ],
+
+    audience: [
+        /\bfor women\b/,
+        /\bfor men\b/,
+        /\bfor creators\b/,
+        /\bfor creators\b/,
+        /\bfor founders\b/,
+        /\bfor entrepreneurs\b/,
+        /\bfor students\b/,
+        /\bfor beginners\b/,
+        /\bfor small businesses\b/,
+        /\bfor business owners\b/,
+        /\bif you're\b/,
+        /\bif you are\b/,
+        /\bif your\b/,
+        /\bpeople with\b/
+    ],
+
+    outcomes: [
+        /\bget\b/,
+        /\bsave\b/,
+        /\bmake\b/,
+        /\bgrow\b/,
+        /\bincrease\b/,
+        /\breduce\b/,
+        /\blose\b/,
+        /\bgain\b/,
+        /\bbuild\b/,
+        /\bavoid\b/,
+        /\bfix\b/,
+        /\bimprove\b/,
+        /\blook\b/,
+        /\bfeel\b/,
+        /\bearn\b/,
+        /\bboost\b/,
+        /\bbetter\b/,
+        /\bmore\b/,
+        /\bless\b/
+    ],
+
+    problems: [
+        /\bproblem\b/,
+        /\bstruggle\b/,
+        /\bstruggling\b/,
+        /\bmistake\b/,
+        /\bmistakes\b/,
+        /\bwrong\b/,
+        /\bfail\b/,
+        /\bfailing\b/,
+        /\bbroke\b/,
+        /\bexpensive\b/,
+        /\bwaste\b/,
+        /\bwasting\b/,
+        /\bconfused\b/,
+        /\bconfusion\b/,
+        /\bfrustrated\b/,
+        /\bfrustrating\b/,
+        /\bcan't\b/,
+        /\bcannot\b/,
+        /\bavoid\b/,
+        /\bkeep\b/,
+        /\bkeeping\b/
+    ],
+
+    opinions: [
+        /\bi think\b/,
+        /\bi believe\b/,
+        /\bhot take\b/,
+        /\bunpopular opinion\b/,
+        /\bcontroversial\b/,
+        /\bmy opinion\b/,
+        /\bi disagree\b/,
+        /\byou don't need\b/,
+        /\bstop\b/,
+        /\bshouldn't\b/,
+        /\boverrated\b/,
+        /\bunderrated\b/
+    ],
+
+    debate: [
+        /\breally\b/,
+        /\bactually\b/,
+        /\bwrong\b/,
+        /\bcontroversial\b/,
+        /\bunpopular\b/,
+        /\bdisagree\b/,
+        /\bvs\b/,
+        /\bversus\b/,
+        /\bshould\b/,
+        /\bshouldn't\b/
+    ],
+
+    product: [
+        /\bproduct\b/,
+        /\bproducts\b/,
+        /\btool\b/,
+        /\btools\b/,
+        /\bapp\b/,
+        /\bapps\b/,
+        /\bbrand\b/,
+        /\bbrands\b/,
+        /\bskincare\b/,
+        /\bmakeup\b/,
+        /\bcourse\b/,
+        /\bsoftware\b/,
+        /\bservice\b/,
+        /\bservices\b/
+    ],
+
+    credibility: [
+        /\byears?\b/,
+        /\bmonths?\b/,
+        /\bclients?\b/,
+        /\bcustomers?\b/,
+        /\bexperience\b/,
+        /\btested\b/,
+        /\btesting\b/,
+        /\bused\b/,
+        /\bworked\b/,
+        /\bresults?\b/,
+        /\bcase study\b/,
+        /\bdata\b/,
+        /\bresearch\b/
+    ],
+
+    actionable: [
+        /\bhow to\b/,
+        /\bstep\b/,
+        /\bsteps\b/,
+        /\btips?\b/,
+        /\bways?\b/,
+        /\bmistakes?\b/,
+        /\brules?\b/,
+        /\bchecklist\b/,
+        /\bframework\b/,
+        /\bstrategy\b/,
+        /\btemplate\b/,
+        /\bguide\b/,
+        /\bthings?\b/
+    ]
+};
+
+
+/* =========================================================
+   UTILITY FUNCTIONS
+========================================================= */
+
+function matchesAny(text, patterns) {
+
+    return patterns.some(pattern => pattern.test(text));
+}
+
+
+function countMatches(text, patterns) {
+
+    return patterns.reduce(
+        (count, pattern) =>
+            count + (pattern.test(text) ? 1 : 0),
+        0
+    );
+}
+
+
+function getWords(text) {
+
+    return text.split(/\s+/).filter(Boolean);
+}
+
+
+function hasSpecificity(text) {
+
+    const wordCount = getWords(text).length;
+
+    return {
+        number: matchesAny(text, PATTERNS.numbers),
+        timeframe: matchesAny(text, PATTERNS.timeframes),
+        audience: matchesAny(text, PATTERNS.audience),
+        outcome: matchesAny(text, PATTERNS.outcomes),
+        problem: matchesAny(text, PATTERNS.problems),
+        product: matchesAny(text, PATTERNS.product),
+        credibility: matchesAny(text, PATTERNS.credibility),
+        category: wordCount >= 5
+    };
+}
+
+
+/* =========================================================
+   FACTOR ANALYSIS
+========================================================= */
+
+function analyzeFactors(originalText, goal) {
+
+    const text = normalize(originalText);
+    const words = getWords(text);
+
+    const specificity = hasSpecificity(text);
+
+    /* ---------- CURIOSITY ---------- */
+
+    let curiosity = 25;
+
+    if (matchesAny(text, PATTERNS.questions)) curiosity += 22;
+    if (matchesAny(text, PATTERNS.curiosity)) curiosity += 20;
+    if (matchesAny(text, PATTERNS.surprise)) curiosity += 15;
+    if (/\b\d+\b/.test(text)) curiosity += 5;
+    if (/\bbut\b|\bhowever\b|\binstead\b/.test(text)) curiosity += 10;
+
+    if (
+        /\bhere are\b.*\b\d+\b/.test(text) &&
+        !matchesAny(text, PATTERNS.curiosity)
+    ) {
+        curiosity -= 12;
+    }
+
+    if (
+        /\bthings you should know\b/.test(text) ||
+        /\bsome things\b/.test(text)
+    ) {
+        curiosity -= 20;
+    }
+
+    curiosity = clamp(curiosity, 10, 96);
+
+
+    /* ---------- SPECIFICITY ---------- */
+
+    let specificityScore = 20;
+
+    if (specificity.number) specificityScore += 18;
+    if (specificity.timeframe) specificityScore += 10;
+    if (specificity.audience) specificityScore += 13;
+    if (specificity.outcome) specificityScore += 12;
+    if (specificity.problem) specificityScore += 10;
+    if (specificity.product) specificityScore += 5;
+    if (specificity.credibility) specificityScore += 7;
+    if (specificity.category) specificityScore += 5;
+
+    if (words.length < 4) specificityScore -= 10;
+
+    specificityScore = clamp(specificityScore, 8, 96);
+
+
+    /* ---------- PAYOFF ---------- */
+
+    let payoff = 28;
+
+    if (specificity.outcome) payoff += 18;
+    if (specificity.problem) payoff += 13;
+    if (matchesAny(text, PATTERNS.actionable)) payoff += 15;
+    if (specificity.number) payoff += 6;
+    if (specificity.audience) payoff += 5;
+
+    if (
+        /\bhere are\b/.test(text) &&
+        !specificity.outcome &&
+        !specificity.problem
+    ) {
+        payoff -= 10;
+    }
+
+    if (
+        /\bthings\b|\bsome things\b|\bstuff\b/.test(text)
+    ) {
+        payoff -= 15;
+    }
+
+    payoff = clamp(payoff, 10, 96);
+
+
+    /* ---------- CLARITY ---------- */
+
+    let clarity = 85;
+
+    if (words.length > 25) clarity -= 20;
+    if (words.length > 35) clarity -= 20;
+    if (words.length < 3) clarity -= 18;
+
+    if (
+        /\bthings\b|\bsomething\b|\bstuff\b|\bvarious\b|\bsome\b/.test(text)
+    ) {
+        clarity -= 12;
+    }
+
+    if (
+        /[,;:]{3,}/.test(originalText)
+    ) {
+        clarity -= 8;
+    }
+
+    clarity = clamp(clarity, 15, 98);
+
+
+    /* ---------- SCROLL STOP ---------- */
+
+    let scroll = 28;
+
+    if (matchesAny(text, PATTERNS.questions)) scroll += 15;
+    if (matchesAny(text, PATTERNS.surprise)) scroll += 16;
+    if (matchesAny(text, PATTERNS.curiosity)) scroll += 15;
+    if (matchesAny(text, PATTERNS.problems)) scroll += 10;
+    if (specificity.number) scroll += 7;
+    if (specificity.outcome) scroll += 8;
+    if (matchesAny(text, PATTERNS.opinions)) scroll += 12;
+    if (matchesAny(text, PATTERNS.debate)) scroll += 8;
+
+    if (
+        /\bhere are\b.*\b\d+\b/.test(text) &&
+        !matchesAny(text, PATTERNS.curiosity)
+    ) {
+        scroll -= 10;
+    }
+
+    scroll = clamp(scroll, 10, 97);
+
+
+    /* ---------- GOAL ADJUSTMENT ---------- */
+
+    const goalAdjustments = {
+
+        reach: {
+            curiosity: 1.08,
+            specificity: .92,
+            payoff: .92,
+            clarity: .95,
+            scroll: 1.10
+        },
+
+        saves: {
+            curiosity: .90,
+            specificity: 1.12,
+            payoff: 1.12,
+            clarity: 1.0,
+            scroll: .90
+        },
+
+        comments: {
+            curiosity: 1.0,
+            specificity: .95,
+            payoff: .90,
+            clarity: .95,
+            scroll: 1.0
+        },
+
+        sales: {
+            curiosity: .95,
+            specificity: 1.02,
+            payoff: 1.15,
+            clarity: 1.05,
+            scroll: .95
+        },
+
+        authority: {
+            curiosity: .90,
+            specificity: 1.12,
+            payoff: 1.0,
+            clarity: 1.05,
+            scroll: .95
         }
+    };
 
-        window.addEventListener('resize', scaleWidget);
-        window.addEventListener('load', scaleWidget);
-        scaleWidget();
+    const adjust = goalAdjustments[goal];
 
-        let selectedGoal = 'Reach';
+    return {
 
-        document.querySelectorAll('.goal-pill').forEach(pill => {
-            pill.addEventListener('click', () => {
-                document.querySelectorAll('.goal-pill').forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-                selectedGoal = pill.dataset.goal;
-                document.getElementById('errorMsg').classList.remove('visible');
-            });
-        });
+        curiosity: clamp(Math.round(curiosity * adjust.curiosity), 10, 98),
 
-        const formView = document.getElementById('formView');
-        const resultView = document.getElementById('resultView');
-        const mainBtn = document.getElementById('mainBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const errorMsg = document.getElementById('errorMsg');
-        const resultActionContainer = document.getElementById('resultActionContainer');
-        const hookInput = document.getElementById('hookInput');
+        specificity: clamp(
+            Math.round(specificityScore * adjust.specificity),
+            10,
+            98
+        ),
 
-        hookInput.addEventListener('input', () => {
-            errorMsg.classList.remove('visible');
-        });
+        payoff: clamp(
+            Math.round(payoff * adjust.payoff),
+            10,
+            98
+        ),
 
-        mainBtn.addEventListener('click', () => {
-            const hookText = hookInput.value.trim();
-            if (!hookText) {
-                errorMsg.textContent = "Please paste your hook before analyzing.";
-                errorMsg.classList.add('visible');
-                return;
+        clarity: clamp(
+            Math.round(clarity * adjust.clarity),
+            10,
+            98
+        ),
+
+        scroll: clamp(
+            Math.round(scroll * adjust.scroll),
+            10,
+            98
+        )
+    };
+}
+
+
+function clamp(number, min, max) {
+
+    return Math.min(Math.max(number, min), max);
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function getStatus(score) {
+
+    if (score >= 72) {
+        return {
+            label: "Strong",
+            className: "strong"
+        };
+    }
+
+    if (score >= 48) {
+        return {
+            label: "Could Improve",
+            className: "medium"
+        };
+    }
+
+    return {
+        label: "Weak",
+        className: "weak"
+    };
+}
+
+
+/* =========================================================
+   FACTOR EXPLANATIONS
+========================================================= */
+
+function factorExplanation(name, score, text) {
+
+    const status = getStatus(score);
+
+    const explanations = {
+
+        curiosity: {
+            strong:
+                "The hook creates a reason to keep watching through a question, tension, unexpected idea, or information gap.",
+
+            medium:
+                "There is some reason to continue, but the hook could create a stronger information gap or unresolved tension.",
+
+            weak:
+                "The topic is understandable, but there is little left unanswered. Give the viewer a specific reason to keep watching."
+        },
+
+        specificity: {
+            strong:
+                "The hook contains concrete details such as a number, audience, problem, outcome, timeframe, or clear constraint.",
+
+            medium:
+                "The topic is somewhat defined, but one more concrete detail would make the promise more compelling.",
+
+            weak:
+                "The hook is broad. Add something concrete — a number, audience, constraint, timeframe, result, or specific problem."
+        },
+
+        payoff: {
+            strong:
+                "The viewer can quickly understand what useful result, answer, transformation, or insight they will get.",
+
+            medium:
+                "The topic is clear, but the viewer has to infer why watching will benefit them.",
+
+            weak:
+                "The viewer knows the topic, but not what they will get from watching. Make the benefit or outcome explicit."
+        },
+
+        clarity: {
+            strong:
+                "The idea can be understood quickly without unnecessary wording or complicated structure.",
+
+            medium:
+                "The main idea is understandable, but tightening the wording could make it easier to process while scrolling.",
+
+            weak:
+                "The wording is too vague, long, or structurally unclear. Simplify it so the idea lands immediately."
+        },
+
+        scroll: {
+            strong:
+                "The structure contains elements that can interrupt predictable scrolling, such as tension, specificity, surprise, or a strong problem.",
+
+            medium:
+                "The hook has some stopping power, but a stronger contrast, claim, question, or consequence could make the opening more distinctive.",
+
+            weak:
+                "The opening resembles a generic content introduction. Add tension, specificity, surprise, or a clear consequence."
+        }
+    };
+
+    return explanations[name][status.className];
+}
+
+
+/* =========================================================
+   GOAL-SPECIFIC FEEDBACK
+========================================================= */
+
+function goalFeedback(text, goal, scores) {
+
+    const feedback = {
+
+        reach: () => {
+
+            if (scores.curiosity < 55) {
+                return "For Reach, the biggest opportunity is creating a stronger curiosity gap. Give viewers a reason to wonder what happens next rather than simply introducing the topic.";
             }
 
-            runAnalysis(hookText, selectedGoal);
-
-            formView.style.display = 'none';
-            resultView.style.display = 'flex';
-            mainBtn.style.display = 'none';
-            resultActionContainer.style.display = 'block';
-            errorMsg.classList.remove('visible');
-        });
-
-        resetBtn.addEventListener('click', () => {
-            hookInput.value = '';
-            selectedGoal = 'Reach';
-            document.querySelectorAll('.goal-pill').forEach(p => {
-                if (p.dataset.goal === 'Reach') p.classList.add('active');
-                else p.classList.remove('active');
-            });
-
-            resultView.style.display = 'none';
-            resultActionContainer.style.display = 'none';
-            formView.style.display = 'flex';
-            mainBtn.style.display = 'block';
-            errorMsg.classList.remove('visible');
-        });
-
-        function runAnalysis(text, goal) {
-            const lower = text.toLowerCase();
-            
-            const hasNumbers = /\d+/.test(text);
-            const hasQuestion = text.includes('?');
-            const hasCuriosityWords = /(stopped|wish|nobody|secret|reason|mistake|wrong|truth|why|how|never|always)/.test(lower);
-            const hasContrast = /(instead|vs|compared|after|before|stop|start)/.test(lower);
-            const isVague = text.length < 25 || (!hasNumbers && !hasCuriosityWords && !hasQuestion);
-
-            let curiosity = hasCuriosityWords || hasQuestion ? "Moderate" : (hasContrast ? "Strong" : "Weak");
-            let specificity = hasNumbers ? "Strong" : "Weak";
-            let scrollStop = (hasCuriosityWords || hasContrast) ? "Moderate" : "Weak";
-
-            if (hasCuriosityWords && hasNumbers) {
-                curiosity = "Strong";
-                scrollStop = "Strong";
+            if (scores.scroll < 60) {
+                return "For Reach, the structure could use a sharper pattern interrupt. A surprising opinion, contrast, mistake, or specific claim would make the opening less predictable.";
             }
 
-            const diagnosisGrid = document.getElementById('diagnosisGrid');
-            diagnosisGrid.innerHTML = `
-                <div class="diag-item">
-                    <span class="diag-label">Curiosity</span>
-                    <span class="diag-status ${getStatusClass(curiosity)}">${getEmoji(curiosity)} ${curiosity}</span>
-                </div>
-                <div class="diag-item">
-                    <span class="diag-label">Specificity</span>
-                    <span class="diag-status ${getStatusClass(specificity)}">${getEmoji(specificity)} ${specificity}</span>
-                </div>
-                <div class="diag-item">
-                    <span class="diag-label">Scroll-Stop</span>
-                    <span class="diag-status ${getStatusClass(scrollStop)}">${getEmoji(scrollStop)} ${scrollStop}</span>
-                </div>
-            `;
+            return "This is reasonably aligned with a Reach goal because it gives viewers a reason to continue and has some scroll-stopping structure.";
+        },
 
-            let analysisHtml = "";
-            if (isVague) {
-                analysisHtml = `<strong>What's holding it back (${goal}):</strong> Your hook states a generic premise without enough tension, numbers, or specific constraints. For a <strong>${goal}</strong> goal, viewers need an immediate reason to pause their scroll—such as a counter-intuitive insight, a concrete metric, or a clear problem statement.`;
-            } else {
-                analysisHtml = `<strong>What's working (${goal}):</strong> You have a recognizable structural anchor. To fully optimize for <strong>${goal}</strong>, lean further into sharpening the payoff so the reader immediately understands what value they gain by staying.`;
-            }
-            document.getElementById('feedbackAnalysisText').innerHTML = analysisHtml;
+        saves: () => {
 
-            const cleanedText = text.replace(/["']/g, '');
-            const improvedList = document.getElementById('improvedHooksList');
-            
-            let imp1 = `“The exact reason why ${cleanedText.toLowerCase()}”`;
-            let imp2 = `“I tested ${cleanedText} for 30 days—here is what happened.”`;
-            let imp3 = `“Stop doing this if you care about ${cleanedText.slice(0, 20)}...”`;
-
-            if (goal === 'Saves') {
-                imp1 = `“Step-by-step framework: ${cleanedates(cleanedText)}”`;
-                imp2 = `“The ultimate checklist for ${cleanedText.toLowerCase()} (save this for later).”`;
-                imp3 = `“3 exact rules to master ${cleanedText.slice(0, 25)} without the guesswork.”`;
-            } else if (goal === 'Authority') {
-                imp1 = `“After years of testing, here is the truth about ${cleanedText.toLowerCase()}.”`;
-                imp2 = `“Most people get ${cleanedText.toLowerCase()} completely wrong. Here is why.”`;
-                imp3 = `“The professional blueprint behind ${cleanedText.slice(0, 25)}.”`;
-            } else if (goal === 'Sales') {
-                imp1 = `“How to fix ${cleanedText.toLowerCase()} in under 5 minutes a day.”`;
-                imp2 = `“The hidden cost of ignoring ${cleanedText.slice(0, 25)}.”`;
-                imp3 = `“Why your current approach to ${cleanedText.toLowerCase()} isn't working.”`;
+            if (scores.specificity < 60) {
+                return "For Saves, make the promise more practical. Add a number, constraint, audience, timeframe, or clearly defined problem so viewers know exactly what information they can take away.";
             }
 
-            improvedList.innerHTML = `
-                <div class="hook-suggestion">
-                    <div class="hook-tag">🔥 Curiosity Angle</div>
-                    <div class="hook-text">${imp1}</div>
-                </div>
-                <div class="hook-suggestion">
-                    <div class="hook-tag">🎯 Specific & Actionable</div>
-                    <div class="hook-text">${imp2}</div>
-                </div>
-                <div class="hook-suggestion">
-                    <div class="hook-tag">⚡ Pattern Interrupt</div>
-                    <div class="hook-text">${imp3}</div>
-                </div>
-            `;
-        }
+            if (scores.payoff < 60) {
+                return "For Saves, make the practical payoff more obvious. Tell viewers what useful information or outcome they will leave with.";
+            }
 
-        function cleanedates(str) {
-            return str.replace(/here are \d+\s*/i, '').replace(/i love/i, '');
-        }
+            return "This is well aligned with Saves because the hook communicates useful information rather than relying entirely on entertainment.";
+        },
 
-        function getStatusClass(status) {
-            if (status === 'Strong') return 'status-strong';
-            if (status === 'Moderate') return 'status-moderate';
-            return 'status-weak';
-        }
+        comments: () => {
 
-        function getEmoji(status) {
-            if (status === 'Strong') return '🟢';
-            if (status === 'Moderate') return '🟡';
-            return '🔴';
+            if (!matchesAny(text, PATTERNS.questions) &&
+                !matchesAny(text, PATTERNS.opinions) &&
+                !matchesAny(text, PATTERNS.debate)) {
+
+                return "For Comments, invite a reaction. A genuine question, opinion, disagreement, or relatable tension can give viewers something to respond to.";
+            }
+
+            return "The hook has elements that can encourage a reaction or opinion, which suits a Comments goal.";
+        },
+
+        sales: () => {
+
+            if (!matchesAny(text, PATTERNS.problems)) {
+                return "For Sales, connect the hook more directly to a problem the viewer wants solved. The product becomes more relevant when the opening establishes the problem first.";
+            }
+
+            if (scores.payoff < 65) {
+                return "For Sales, strengthen the benefit. Make the transformation or specific outcome more obvious so the viewer understands why the solution matters.";
+            }
+
+            return "The hook connects reasonably well to a Sales goal because it establishes a problem or benefit that can lead naturally into the offer.";
+        },
+
+        authority: () => {
+
+            if (!matchesAny(text, PATTERNS.credibility) &&
+                !matchesAny(text, PATTERNS.opinions)) {
+
+                return "For Authority, add a clear point of view, original insight, experience, evidence, or a specific observation. Expertise is easier to perceive when the hook says something concrete.";
+            }
+
+            return "The hook contains a point of view or credibility signal that can support an Authority positioning.";
         }
-    </script>
+    };
+
+    return feedback[goal]();
+}
+
+
+/* =========================================================
+   IMPROVED HOOK GENERATION
+========================================================= */
+
+function generateHooks(original, goal) {
+
+    const cleaned = original.trim();
+
+    /*
+       These are transformations, not unrelated topic generators.
+       They preserve the user's subject wherever possible.
+    */
+
+    const numberMatch = cleaned.match(/\b\d+\b/);
+
+    let baseTopic = cleaned
+        .replace(/^here are\s+/i, "")
+        .replace(/^some things\s+/i, "")
+        .replace(/^things\s+/i, "")
+        .replace(/[.!?]+$/, "")
+        .trim();
+
+    if (!baseTopic) {
+        baseTopic = cleaned;
+    }
+
+
+    /* ---------- CURIOSITY ---------- */
+
+    let curiosityHook;
+
+    if (/^here are\s+\d+/i.test(cleaned)) {
+
+        curiosityHook =
+            `I expected to love these, but one of them completely surprised me: ${baseTopic.replace(/^\d+\s+/i, "")}.`;
+
+    } else if (matchesAny(normalize(cleaned), PATTERNS.problems)) {
+
+        curiosityHook =
+            `The reason ${baseTopic.toLowerCase()} may not be working the way you think.`;
+
+    } else {
+
+        curiosityHook =
+            `I wish I knew this before I started with ${baseTopic.toLowerCase()}.`;
+    }
+
+
+    /* ---------- SPECIFIC ---------- */
+
+    let specificHook;
+
+    if (numberMatch) {
+
+        specificHook =
+            `${numberMatch[0]} ${baseTopic.replace(
+                new RegExp("^" + numberMatch[0] + "\\s*", "i"),
+                ""
+            )} — what I'd actually recommend.`;
+
+    } else {
+
+        specificHook =
+            `The ${baseTopic.toLowerCase()} I'd actually recommend if you want a practical starting point.`;
+    }
+
+
+    /* ---------- CONTRARIAN ---------- */
+
+    let contrarianHook;
+
+    if (/skincare/i.test(cleaned)) {
+
+        contrarianHook =
+            `You probably don't need more skincare — you need to stop buying the wrong products.`;
+
+    } else if (/money|business|marketing|content|instagram/i.test(cleaned)) {
+
+        contrarianHook =
+            `You don't need more ${baseTopic.toLowerCase()} — you need to approach it differently.`;
+
+    } else {
+
+        contrarianHook =
+            `More ${baseTopic.toLowerCase()} isn't always better. Here's what I'd focus on instead.`;
+    }
+
+
+    return [
+        {
+            label: "Curiosity",
+            text: curiosityHook
+        },
+        {
+            label: "Specific",
+            text: specificHook
+        },
+        {
+            label: "Contrarian / Pattern Interrupt",
+            text: contrarianHook
+        }
+    ];
+}
+
+
+/* =========================================================
+   OVERALL ASSESSMENT
+========================================================= */
+
+function getOverall(scores) {
+
+    const values = Object.values(scores);
+
+    const average =
+        Math.round(
+            values.reduce((a, b) => a + b, 0) / values.length
+        );
+
+    if (average >= 78) {
+
+        return {
+            score: average,
+            title: "Strong hook",
+            text:
+                "This already has several strong structural elements. I'd focus on delivering on the promise rather than changing the hook just for the sake of optimization."
+        };
+
+    }
+
+    if (average >= 60) {
+
+        return {
+            score: average,
+            title: "Good foundation",
+            text:
+                "The idea is workable, but one or two structural improvements could make the opening more compelling and more clearly aligned with your goal."
+        };
+
+    }
+
+    if (average >= 40) {
+
+        return {
+            score: average,
+            title: "Needs sharpening",
+            text:
+                "The topic has potential, but the hook currently relies too much on simply introducing the subject. Give viewers a clearer reason to continue."
+        };
+
+    }
+
+    return {
+        score: average,
+        title: "Weak opening",
+        text:
+            "The topic may be useful, but the opening doesn't yet communicate a strong reason to stop, care, or continue watching."
+    };
+}
+
+
+/* =========================================================
+   WHAT'S WORKING
+========================================================= */
+
+function getWorking(scores, text) {
+
+    const strengths = [];
+
+    if (scores.clarity >= 70)
+        strengths.push("The core idea is easy to understand quickly.");
+
+    if (scores.curiosity >= 70)
+        strengths.push("The hook creates an information gap or open question.");
+
+    if (scores.specificity >= 70)
+        strengths.push("The hook gives the viewer concrete information.");
+
+    if (scores.payoff >= 70)
+        strengths.push("The viewer can understand the benefit of watching.");
+
+    if (scores.scroll >= 70)
+        strengths.push("The structure contains useful scroll-stopping elements.");
+
+    if (strengths.length === 0)
+        strengths.push("The topic itself is identifiable, giving you a clear foundation to strengthen.");
+
+    return strengths.slice(0, 2).join(" ");
+}
+
+
+/* =========================================================
+   WHAT'S HOLDING IT BACK
+========================================================= */
+
+function getWeakness(scores, text, goal) {
+
+    const weaknesses = [];
+
+    if (scores.curiosity < 55)
+        weaknesses.push("There isn't enough unanswered tension.");
+
+    if (scores.specificity < 55)
+        weaknesses.push("The idea is too broad.");
+
+    if (scores.payoff < 55)
+        weaknesses.push("The viewer's benefit isn't obvious.");
+
+    if (scores.scroll < 55)
+        weaknesses.push("The opening is relatively predictable.");
+
+    if (scores.clarity < 55)
+        weaknesses.push("The wording could be simplified.");
+
+    if (weaknesses.length === 0) {
+
+        return goalFeedback(
+            normalize(text),
+            goal,
+            scores
+        );
+    }
+
+    return weaknesses.slice(0, 2).join(" ") +
+        " " +
+        goalFeedback(normalize(text), goal, scores);
+}
+
+
+/* =========================================================
+   RENDER RESULTS
+========================================================= */
+
+function renderResults(hook, goal, scores) {
+
+    const overall = getOverall(scores);
+
+    const factors = [
+        ["Curiosity", "curiosity"],
+        ["Specificity", "specificity"],
+        ["Payoff", "payoff"],
+        ["Clarity", "clarity"],
+        ["Scroll-stop potential", "scroll"]
+    ];
+
+    const improvements = generateHooks(hook, goal);
+
+    document.getElementById("app").innerHTML = `
+
+        <div class="screen">
+
+            <div class="results-header">
+
+                <div>
+                    <div class="eyebrow">Hook Diagnosis</div>
+
+                    <h2 class="results-title">
+                        ${escapeHTML(overall.title)}
+                    </h2>
+                </div>
+
+                <div class="overall">
+
+                    <span class="overall-score">
+                        ${overall.score}
+                    </span>
+
+                    <span class="overall-label">
+                        Structure
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="factor-grid">
+
+                ${factors.map(([label, key]) => {
+
+                    const score = scores[key];
+                    const status = getStatus(score);
+
+                    return `
+
+                        <div class="factor-card">
+
+                            <div class="factor-top">
+
+                                <span class="factor-name">
+                                    ${label}
+                                </span>
+
+                                <span class="status ${status.className}">
+                                    ${status.label}
+                                </span>
+
+                            </div>
+
+                            <div class="factor-description">
+                                ${factorExplanation(key, score, hook)}
+                            </div>
+
+                            <div class="meter">
+                                <div
+                                    class="meter-fill"
+                                    style="width:${score}%"
+                                ></div>
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }).join("")}
+
+            </div>
+
+
+            <div class="feedback-section">
+
+                <div class="feedback-card">
+
+                    <div class="feedback-heading">
+                        💡 What's Working
+                    </div>
+
+                    <div class="feedback-text">
+                        ${escapeHTML(
+                            getWorking(scores, hook)
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="feedback-card">
+
+                    <div class="feedback-heading">
+                        ⚠️ What's Holding It Back
+                    </div>
+
+                    <div class="feedback-text">
+                        ${escapeHTML(
+                            getWeakness(
+                                scores,
+                                hook,
+                                goal
+                            )
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="feedback-card">
+
+                    <div class="feedback-heading">
+                        💡 Goal: ${GOALS[goal].icon} ${GOALS[goal].name}
+                    </div>
+
+                    <div class="feedback-text">
+                        ${escapeHTML(
+                            goalFeedback(
+                                normalize(hook),
+                                goal,
+                                scores
+                            )
+                        )}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <h3 class="improved-heading">
+                ✨ Try This Instead
+            </h3>
+
+
+            ${improvements.map(option => `
+
+                <div class="hook-option">
+
+                    <div class="option-label">
+                        ${escapeHTML(option.label)}
+                    </div>
+
+                    <div class="option-text">
+                        ${escapeHTML(option.text)}
+                    </div>
+
+                </div>
+
+            `).join("")}
+
+
+            <button
+                class="reset-btn"
+                onclick="resetWidget()"
+            >
+                ↻ Check Another Hook
+            </button>
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   ANALYZE
+========================================================= */
+
+function analyzeHook() {
+
+    const input =
+        document.getElementById("hookInput");
+
+    const error =
+        document.getElementById("error");
+
+    const hook = input.value.trim();
+
+    error.innerHTML = "";
+
+    if (!hook) {
+
+        error.innerHTML =
+            `<div class="error">Paste a hook first.</div>`;
+
+        return;
+    }
+
+    if (!selectedGoal) {
+
+        error.innerHTML =
+            `<div class="error">Choose a goal first.</div>`;
+
+        return;
+    }
+
+    const scores =
+        analyzeFactors(
+            hook,
+            selectedGoal
+        );
+
+    renderResults(
+        hook,
+        selectedGoal,
+        scores
+    );
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetWidget() {
+
+    selectedGoal = null;
+
+    renderInitial();
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+renderInitial();
+
+</script>
+
 </body>
 </html>
