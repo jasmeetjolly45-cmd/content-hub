@@ -11,8 +11,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+
 /* =========================================================
-   NOTION BACKGROUND
+   GLOBAL / NOTION BACKGROUND
 ========================================================= */
 
 html,
@@ -30,19 +31,25 @@ body {
     }
 }
 
-/* =========================================================
-   OUTER COMPOSITION
-   613 × 447
-========================================================= */
-
 * {
     box-sizing: border-box;
 }
 
+
+/* =========================================================
+   OUTER COMPOSITION
+   DESIGN SIZE: 613 × 447
+
+   The entire composition maintains this aspect ratio.
+   On mobile, the COMPLETE composition scales down.
+========================================================= */
+
 .hook-check-outer {
     position: relative;
+
     width: 100%;
     max-width: 613px;
+
     margin: 0 auto;
 
     aspect-ratio: 613 / 447;
@@ -55,10 +62,16 @@ body {
     overflow: hidden;
 }
 
+
 /* =========================================================
-   INNER WIDGET
-   541 × 375
-   Percentage positioning preserves frame on mobile.
+   INNER FOREST-GREEN WIDGET
+   DESIGN SIZE: 541 × 375
+
+   36px frame on all sides.
+
+   IMPORTANT:
+   Percentage positioning is intentional.
+   Do NOT replace with height:100%.
 ========================================================= */
 
 .hook-check-inner {
@@ -66,53 +79,57 @@ body {
 
     left: 5.873%;
     right: 5.873%;
+
     top: 8.054%;
     bottom: 8.054%;
 
     background: #0b3426;
-    color: #f3e8d5;
 
-    overflow: hidden;
+    color: #f3e8d5;
 
     border: 1px solid rgba(212, 175, 55, 0.28);
 
     font-family: "Inter", sans-serif;
+
+    overflow: hidden;
 }
 
+
 /* =========================================================
-   APP CONTAINER
+   APP
+
+   The app itself NEVER creates a page-level scroll.
+   The entire widget is supposed to scale with the
+   outer 613 × 447 composition.
 ========================================================= */
 
 .app {
+    position: absolute;
+
+    inset: 0;
+
     width: 100%;
     height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
 
-    scrollbar-width: thin;
-    scrollbar-color: rgba(212,175,55,.35) transparent;
+    overflow: hidden;
 }
 
-.app::-webkit-scrollbar {
-    width: 5px;
-}
-
-.app::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.app::-webkit-scrollbar-thumb {
-    background: rgba(212,175,55,.35);
-}
 
 /* =========================================================
    SCREEN
 ========================================================= */
 
 .screen {
-    min-height: 100%;
-    padding: clamp(20px, 4vw, 30px);
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 30px;
+
+    overflow: hidden;
 }
+
 
 /* =========================================================
    HEADER
@@ -122,30 +139,41 @@ body {
     font-size: 8px;
     letter-spacing: 2px;
     text-transform: uppercase;
+
     color: #d4af37;
+
     font-weight: 700;
+
     margin-bottom: 5px;
 }
 
 .title {
     margin: 0;
+
     font-family: "Cormorant Garamond", serif;
-    font-size: clamp(28px, 5vw, 38px);
+
+    font-size: 38px;
     line-height: .9;
+
     font-weight: 600;
+
     letter-spacing: -.5px;
 }
 
 .subtitle {
     margin: 8px 0 0;
+
     color: rgba(243,232,213,.7);
+
     font-size: 10px;
     line-height: 1.5;
+
     max-width: 390px;
 }
 
+
 /* =========================================================
-   INPUT AREA
+   FORM
 ========================================================= */
 
 .form-section {
@@ -154,31 +182,51 @@ body {
 
 .label {
     display: block;
+
     margin-bottom: 6px;
 
     font-size: 8px;
+
     letter-spacing: 1.5px;
+
     text-transform: uppercase;
 
     color: rgba(243,232,213,.7);
+
     font-weight: 700;
 }
 
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
 textarea {
+    display: block;
+
     width: 100%;
+
+    height: 82px;
+
     min-height: 82px;
-    resize: vertical;
+    max-height: 82px;
+
+    resize: none;
 
     padding: 11px 12px;
 
     border: 1px solid rgba(243,232,213,.18);
+
     border-radius: 5px;
 
     background: #123f30;
+
     color: #f3e8d5;
 
     font-family: "Inter", sans-serif;
+
     font-size: 11px;
+
     line-height: 1.5;
 
     outline: none;
@@ -194,31 +242,42 @@ textarea:focus {
     border-color: rgba(212,175,55,.65);
 }
 
+
 /* =========================================================
    GOAL SELECTORS
 ========================================================= */
 
 .goal-grid {
     display: grid;
+
     grid-template-columns: repeat(5, 1fr);
+
     gap: 5px;
+
+    width: 100%;
 }
 
 .goal-btn {
     min-width: 0;
 
-    padding: 8px 4px;
+    height: 48px;
+
+    padding: 6px 3px;
 
     border: 1px solid rgba(243,232,213,.14);
+
     border-radius: 4px;
 
     background: #123f30;
+
     color: rgba(243,232,213,.75);
 
     cursor: pointer;
 
     font-family: "Inter", sans-serif;
+
     font-size: 8px;
+
     font-weight: 600;
 
     transition:
@@ -230,49 +289,70 @@ textarea:focus {
 
 .goal-btn:hover {
     border-color: rgba(212,175,55,.5);
+
     color: #f3e8d5;
 }
 
 .goal-btn.active {
     background: rgba(212,175,55,.13);
+
     border-color: #d4af37;
+
     color: #f3e8d5;
 }
 
 .goal-icon {
     display: block;
+
     font-size: 13px;
+
+    line-height: 1;
+
     margin-bottom: 3px;
 }
 
 .goal-name {
     display: block;
+
     white-space: nowrap;
+
     overflow: hidden;
+
     text-overflow: ellipsis;
 }
+
 
 /* =========================================================
    PRIMARY BUTTON
 ========================================================= */
 
 .primary-btn {
+    display: block;
+
     width: 100%;
+
+    height: 36px;
+
     margin-top: 12px;
 
-    padding: 11px 14px;
+    padding: 0 14px;
 
     border: 1px solid #d4af37;
+
     border-radius: 4px;
 
     background: #d4af37;
+
     color: #0b3426;
 
     font-family: "Inter", sans-serif;
+
     font-size: 9px;
+
     font-weight: 800;
 
     letter-spacing: 1.4px;
+
     text-transform: uppercase;
 
     cursor: pointer;
@@ -293,17 +373,22 @@ textarea:focus {
 
 .primary-btn:disabled {
     opacity: .4;
+
     cursor: not-allowed;
 }
 
+
 /* =========================================================
-   RESULTS
+   RESULTS HEADER
 ========================================================= */
 
 .results-header {
     display: flex;
+
     align-items: flex-start;
+
     justify-content: space-between;
+
     gap: 12px;
 
     margin-bottom: 15px;
@@ -313,8 +398,11 @@ textarea:focus {
     margin: 0;
 
     font-family: "Cormorant Garamond", serif;
-    font-size: clamp(26px, 5vw, 34px);
+
+    font-size: 34px;
+
     line-height: .95;
+
     font-weight: 600;
 }
 
@@ -324,6 +412,7 @@ textarea:focus {
     padding: 7px 9px;
 
     border: 1px solid rgba(212,175,55,.4);
+
     background: rgba(212,175,55,.08);
 
     text-align: center;
@@ -331,21 +420,28 @@ textarea:focus {
 
 .overall-score {
     display: block;
+
     font-size: 17px;
+
     font-weight: 700;
+
     color: #d4af37;
 }
 
 .overall-label {
     display: block;
+
     margin-top: 1px;
 
     font-size: 6px;
+
     letter-spacing: 1px;
+
     text-transform: uppercase;
 
     color: rgba(243,232,213,.55);
 }
+
 
 /* =========================================================
    FACTOR CARDS
@@ -353,14 +449,19 @@ textarea:focus {
 
 .factor-grid {
     display: grid;
+
     grid-template-columns: repeat(2, 1fr);
+
     gap: 6px;
 }
 
 .factor-card {
+    min-width: 0;
+
     padding: 9px;
 
     border: 1px solid rgba(243,232,213,.11);
+
     border-radius: 4px;
 
     background: #123f30;
@@ -368,21 +469,30 @@ textarea:focus {
 
 .factor-top {
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
+
     gap: 5px;
 }
 
 .factor-name {
     font-size: 8px;
+
     font-weight: 700;
 }
 
 .status {
     font-size: 6px;
+
     letter-spacing: .6px;
+
     text-transform: uppercase;
+
     font-weight: 700;
+
+    white-space: nowrap;
 }
 
 .status.strong {
@@ -403,21 +513,26 @@ textarea:focus {
     color: rgba(243,232,213,.58);
 
     font-size: 7px;
+
     line-height: 1.4;
 }
 
 .meter {
     height: 3px;
+
     margin-top: 7px;
 
     background: rgba(243,232,213,.09);
+
     overflow: hidden;
 }
 
 .meter-fill {
     height: 100%;
+
     background: #d4af37;
 }
+
 
 /* =========================================================
    FEEDBACK
@@ -428,9 +543,9 @@ textarea:focus {
 }
 
 .feedback-card {
-    padding: 11px;
+    padding: 9px 10px;
 
-    margin-bottom: 7px;
+    margin-bottom: 6px;
 
     border-left: 2px solid #d4af37;
 
@@ -438,11 +553,14 @@ textarea:focus {
 }
 
 .feedback-heading {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 
     font-size: 8px;
+
     letter-spacing: .8px;
+
     text-transform: uppercase;
+
     font-weight: 800;
 }
 
@@ -450,65 +568,87 @@ textarea:focus {
     color: rgba(243,232,213,.72);
 
     font-size: 8px;
-    line-height: 1.5;
+
+    line-height: 1.45;
 }
+
 
 /* =========================================================
    IMPROVED HOOKS
 ========================================================= */
 
 .improved-heading {
-    margin: 14px 0 7px;
+    margin: 11px 0 6px;
 
     font-family: "Cormorant Garamond", serif;
+
     font-size: 20px;
+
+    line-height: 1;
+
     font-weight: 600;
 }
 
 .hook-option {
-    padding: 9px 10px;
-    margin-bottom: 6px;
+    padding: 8px 10px;
+
+    margin-bottom: 5px;
 
     border: 1px solid rgba(212,175,55,.18);
+
     background: #123f30;
 }
 
 .option-label {
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 
     font-size: 6px;
+
     letter-spacing: 1px;
+
     text-transform: uppercase;
 
     color: #d4af37;
+
     font-weight: 800;
 }
 
 .option-text {
     font-size: 8px;
-    line-height: 1.45;
+
+    line-height: 1.4;
+
     color: #f3e8d5;
 }
+
 
 /* =========================================================
    RESET
 ========================================================= */
 
 .reset-btn {
+    display: block;
+
     width: 100%;
 
-    margin-top: 8px;
-    padding: 9px;
+    height: 32px;
+
+    margin-top: 7px;
+
+    padding: 0 9px;
 
     background: transparent;
 
     border: 1px solid rgba(243,232,213,.18);
+
     border-radius: 4px;
 
     color: rgba(243,232,213,.7);
 
     font-family: "Inter", sans-serif;
+
     font-size: 8px;
+
     font-weight: 700;
 
     cursor: pointer;
@@ -518,11 +658,13 @@ textarea:focus {
 
 .reset-btn:hover {
     border-color: #d4af37;
+
     color: #d4af37;
 }
 
+
 /* =========================================================
-   EMPTY / ERROR
+   ERROR
 ========================================================= */
 
 .error {
@@ -533,63 +675,134 @@ textarea:focus {
     font-size: 8px;
 }
 
+
 /* =========================================================
-   SMALL WIDTH ADJUSTMENTS
+   IMPORTANT MOBILE BEHAVIOUR
+
+   NO MOBILE REDESIGN.
+
+   The outer 613 × 447 composition simply gets narrower
+   while retaining its aspect ratio.
+
+   DO NOT change the inner widget to height:100%.
 ========================================================= */
 
-@media (max-width: 430px) {
+@media (max-width: 613px) {
 
-    .screen {
-        padding: 18px;
+    .hook-check-outer {
+        width: 100%;
+        max-width: 613px;
+
+        aspect-ratio: 613 / 447;
     }
 
-    .goal-grid {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 3px;
+    .hook-check-inner {
+        left: 5.873%;
+        right: 5.873%;
+
+        top: 8.054%;
+        bottom: 8.054%;
+    }
+
+    .screen {
+        padding: 30px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL SCREENS
+
+   Still preserve the same composition.
+   Only reduce text slightly so the interaction remains
+   readable without creating overflow.
+========================================================= */
+
+@media (max-width: 390px) {
+
+    .screen {
+        padding: 27px;
+    }
+
+    .title {
+        font-size: 34px;
+    }
+
+    .subtitle {
+        font-size: 9px;
+    }
+
+    textarea {
+        height: 78px;
+        min-height: 78px;
+        max-height: 78px;
     }
 
     .goal-btn {
-        padding: 7px 2px;
-        font-size: 6.5px;
+        height: 46px;
+        font-size: 7px;
+    }
+
+    .goal-icon {
+        font-size: 12px;
+    }
+
+    .primary-btn {
+        height: 34px;
+    }
+}
+
+
+@media (max-width: 330px) {
+
+    .screen {
+        padding: 24px;
+    }
+
+    .title {
+        font-size: 31px;
+    }
+
+    .subtitle {
+        font-size: 8px;
+    }
+
+    .goal-btn {
+        height: 43px;
+        font-size: 6px;
     }
 
     .goal-icon {
         font-size: 11px;
     }
 
-    .factor-grid {
-        grid-template-columns: 1fr 1fr;
+    textarea {
+        height: 72px;
+        min-height: 72px;
+        max-height: 72px;
+    }
+
+    .primary-btn {
+        height: 32px;
     }
 }
 
-@media (max-width: 320px) {
-
-    .screen {
-        padding: 14px;
-    }
-
-    .title {
-        font-size: 27px;
-    }
-
-    .goal-icon {
-        font-size: 10px;
-    }
-
-    .goal-btn {
-        font-size: 6px;
-    }
-
-    .factor-grid {
-        grid-template-columns: 1fr;
-    }
-}
 </style>
 </head>
 
+
 <body>
 
+
+<!-- =======================================================
+     COMPLETE 613 × 447 COMPOSITION
+======================================================== -->
+
 <div class="hook-check-outer">
+
+    <!-- ===================================================
+         541 × 375 INNER WIDGET
+    ==================================================== -->
 
     <div class="hook-check-inner">
 
@@ -600,43 +813,77 @@ textarea:focus {
 </div>
 
 
+
 <script>
+
 /* =========================================================
    HOOK CHECK
-   Deterministic client-side hook analysis
+   Deterministic client-side content analysis
 ========================================================= */
 
+
 const GOALS = {
+
     reach: {
         icon: "🔥",
         name: "Reach",
-        priorities: ["curiosity", "novelty", "surprise", "pattern", "emotion"]
+        priorities: [
+            "curiosity",
+            "novelty",
+            "surprise",
+            "pattern",
+            "emotion"
+        ]
     },
 
     saves: {
         icon: "💾",
         name: "Saves",
-        priorities: ["usefulness", "specificity", "actionable", "payoff"]
+        priorities: [
+            "usefulness",
+            "specificity",
+            "actionable",
+            "payoff"
+        ]
     },
 
     comments: {
         icon: "💬",
         name: "Comments",
-        priorities: ["opinion", "question", "debate", "relatable"]
+        priorities: [
+            "opinion",
+            "question",
+            "debate",
+            "relatable"
+        ]
     },
 
     sales: {
         icon: "🛒",
         name: "Sales",
-        priorities: ["problem", "benefit", "transformation", "product", "outcome"]
+        priorities: [
+            "problem",
+            "benefit",
+            "transformation",
+            "product",
+            "outcome"
+        ]
     },
 
     authority: {
         icon: "👑",
         name: "Authority",
-        priorities: ["expertise", "specificity", "opinion", "insight", "credibility"]
+        priorities: [
+            "expertise",
+            "specificity",
+            "opinion",
+            "insight",
+            "credibility"
+        ]
     }
+
 };
+
 
 let selectedGoal = null;
 
@@ -648,20 +895,28 @@ let selectedGoal = null;
 function renderInitial() {
 
     document.getElementById("app").innerHTML = `
+
         <div class="screen">
 
-            <div class="eyebrow">Content Strategy Utility</div>
+            <div class="eyebrow">
+                Content Strategy Utility
+            </div>
 
-            <h1 class="title">Hook Check</h1>
+            <h1 class="title">
+                Hook Check
+            </h1>
 
             <p class="subtitle">
                 Paste your hook and I'll break down what's working,
                 what's weak, and how to make it stronger.
             </p>
 
+
             <div class="form-section">
 
-                <label class="label">Your Hook</label>
+                <label class="label">
+                    Your Hook
+                </label>
 
                 <textarea
                     id="hookInput"
@@ -674,19 +929,31 @@ function renderInitial() {
 
             <div class="form-section">
 
-                <label class="label">What's Your Goal?</label>
+                <label class="label">
+                    What's Your Goal?
+                </label>
 
                 <div class="goal-grid">
 
-                    ${Object.entries(GOALS).map(([key, goal]) => `
+                    ${Object.entries(GOALS).map(
+                        ([key, goal]) => `
+
                         <button
                             class="goal-btn"
                             data-goal="${key}"
                             onclick="selectGoal('${key}')"
                         >
-                            <span class="goal-icon">${goal.icon}</span>
-                            <span class="goal-name">${goal.name}</span>
+
+                            <span class="goal-icon">
+                                ${goal.icon}
+                            </span>
+
+                            <span class="goal-name">
+                                ${goal.name}
+                            </span>
+
                         </button>
+
                     `).join("")}
 
                 </div>
@@ -696,15 +963,16 @@ function renderInitial() {
 
             <button
                 class="primary-btn"
-                id="analyzeBtn"
                 onclick="analyzeHook()"
             >
                 Analyze Hook
             </button>
 
+
             <div id="error"></div>
 
         </div>
+
     `;
 }
 
@@ -717,12 +985,16 @@ function selectGoal(goal) {
 
     selectedGoal = goal;
 
-    document.querySelectorAll(".goal-btn").forEach(btn => {
-        btn.classList.toggle(
-            "active",
-            btn.dataset.goal === goal
-        );
-    });
+    document.querySelectorAll(".goal-btn")
+        .forEach(btn => {
+
+            btn.classList.toggle(
+                "active",
+                btn.dataset.goal === goal
+            );
+
+        });
+
 }
 
 
@@ -733,11 +1005,42 @@ function selectGoal(goal) {
 function normalize(text) {
 
     return text
+
         .toLowerCase()
+
         .replace(/[“”‘’]/g, "'")
-        .replace(/[^\w\s₹$%!?.,'’-]/gi, " ")
-        .replace(/\s+/g, " ")
+
+        .replace(
+            /[^\w\s₹$%!?.,'’-]/gi,
+            " "
+        )
+
+        .replace(
+            /\s+/g,
+            " "
+        )
+
         .trim();
+
+}
+
+
+function getWords(text) {
+
+    return text
+        .split(/\s+/)
+        .filter(Boolean);
+
+}
+
+
+function clamp(number, min, max) {
+
+    return Math.min(
+        Math.max(number, min),
+        max
+    );
+
 }
 
 
@@ -748,6 +1051,7 @@ function normalize(text) {
 const PATTERNS = {
 
     curiosity: [
+
         /\bwhy\b/,
         /\bhow\b/,
         /\bwhat\b/,
@@ -774,9 +1078,12 @@ const PATTERNS = {
         /\bvs\b/,
         /\bversus\b/,
         /\breal reason\b/
+
     ],
 
+
     surprise: [
+
         /\bactually\b/,
         /\bbut\b/,
         /\bnot\b/,
@@ -790,34 +1097,47 @@ const PATTERNS = {
         /\beveryone\b/,
         /\bnobody\b/,
         /\bno one\b/
+
     ],
+
 
     questions: [
+
         /\?/,
+
         /^(why|how|what|when|where|which|who)\b/
+
     ],
 
+
     numbers: [
+
         /\b\d+\b/,
         /\b\d+%\b/,
         /₹\s?\d+/,
         /\$\s?\d+/,
+
         /\b\d+\s?(days?|weeks?|months?|years?|hours?|minutes?)\b/
+
     ],
 
+
     timeframes: [
+
         /\b\d+\s?(days?|weeks?|months?|years?|hours?|minutes?)\b/,
+
         /\btoday\b/,
         /\bthis week\b/,
         /\bthis month\b/,
-        /\bovernight\b/,
-        /\bin \d+\b/
+        /\bovernight\b/
+
     ],
 
+
     audience: [
+
         /\bfor women\b/,
         /\bfor men\b/,
-        /\bfor creators\b/,
         /\bfor creators\b/,
         /\bfor founders\b/,
         /\bfor entrepreneurs\b/,
@@ -827,11 +1147,13 @@ const PATTERNS = {
         /\bfor business owners\b/,
         /\bif you're\b/,
         /\bif you are\b/,
-        /\bif your\b/,
         /\bpeople with\b/
+
     ],
 
+
     outcomes: [
+
         /\bget\b/,
         /\bsave\b/,
         /\bmake\b/,
@@ -851,9 +1173,12 @@ const PATTERNS = {
         /\bbetter\b/,
         /\bmore\b/,
         /\bless\b/
+
     ],
 
+
     problems: [
+
         /\bproblem\b/,
         /\bstruggle\b/,
         /\bstruggling\b/,
@@ -873,11 +1198,13 @@ const PATTERNS = {
         /\bcan't\b/,
         /\bcannot\b/,
         /\bavoid\b/,
-        /\bkeep\b/,
         /\bkeeping\b/
+
     ],
 
+
     opinions: [
+
         /\bi think\b/,
         /\bi believe\b/,
         /\bhot take\b/,
@@ -890,9 +1217,12 @@ const PATTERNS = {
         /\bshouldn't\b/,
         /\boverrated\b/,
         /\bunderrated\b/
+
     ],
 
+
     debate: [
+
         /\breally\b/,
         /\bactually\b/,
         /\bwrong\b/,
@@ -903,9 +1233,12 @@ const PATTERNS = {
         /\bversus\b/,
         /\bshould\b/,
         /\bshouldn't\b/
+
     ],
 
+
     product: [
+
         /\bproduct\b/,
         /\bproducts\b/,
         /\btool\b/,
@@ -920,9 +1253,12 @@ const PATTERNS = {
         /\bsoftware\b/,
         /\bservice\b/,
         /\bservices\b/
+
     ],
 
+
     credibility: [
+
         /\byears?\b/,
         /\bmonths?\b/,
         /\bclients?\b/,
@@ -936,12 +1272,15 @@ const PATTERNS = {
         /\bcase study\b/,
         /\bdata\b/,
         /\bresearch\b/
+
     ],
 
+
     actionable: [
+
         /\bhow to\b/,
         /\bstep\b/,
-        /\bsteps\b/,
+        /\bstep[s]?\b/,
         /\btips?\b/,
         /\bways?\b/,
         /\bmistakes?\b/,
@@ -950,35 +1289,23 @@ const PATTERNS = {
         /\bframework\b/,
         /\bstrategy\b/,
         /\btemplate\b/,
-        /\bguide\b/,
-        /\bthings?\b/
+        /\bguide\b/
+
     ]
+
 };
 
 
 /* =========================================================
-   UTILITY FUNCTIONS
+   PATTERN HELPERS
 ========================================================= */
 
 function matchesAny(text, patterns) {
 
-    return patterns.some(pattern => pattern.test(text));
-}
-
-
-function countMatches(text, patterns) {
-
-    return patterns.reduce(
-        (count, pattern) =>
-            count + (pattern.test(text) ? 1 : 0),
-        0
+    return patterns.some(
+        pattern => pattern.test(text)
     );
-}
 
-
-function getWords(text) {
-
-    return text.split(/\s+/).filter(Boolean);
 }
 
 
@@ -987,15 +1314,54 @@ function hasSpecificity(text) {
     const wordCount = getWords(text).length;
 
     return {
-        number: matchesAny(text, PATTERNS.numbers),
-        timeframe: matchesAny(text, PATTERNS.timeframes),
-        audience: matchesAny(text, PATTERNS.audience),
-        outcome: matchesAny(text, PATTERNS.outcomes),
-        problem: matchesAny(text, PATTERNS.problems),
-        product: matchesAny(text, PATTERNS.product),
-        credibility: matchesAny(text, PATTERNS.credibility),
-        category: wordCount >= 5
+
+        number:
+            matchesAny(
+                text,
+                PATTERNS.numbers
+            ),
+
+        timeframe:
+            matchesAny(
+                text,
+                PATTERNS.timeframes
+            ),
+
+        audience:
+            matchesAny(
+                text,
+                PATTERNS.audience
+            ),
+
+        outcome:
+            matchesAny(
+                text,
+                PATTERNS.outcomes
+            ),
+
+        problem:
+            matchesAny(
+                text,
+                PATTERNS.problems
+            ),
+
+        product:
+            matchesAny(
+                text,
+                PATTERNS.product
+            ),
+
+        credibility:
+            matchesAny(
+                text,
+                PATTERNS.credibility
+            ),
+
+        category:
+            wordCount >= 5
+
     };
+
 }
 
 
@@ -1006,23 +1372,60 @@ function hasSpecificity(text) {
 function analyzeFactors(originalText, goal) {
 
     const text = normalize(originalText);
+
     const words = getWords(text);
 
-    const specificity = hasSpecificity(text);
+    const specificity =
+        hasSpecificity(text);
+
 
     /* ---------- CURIOSITY ---------- */
 
     let curiosity = 25;
 
-    if (matchesAny(text, PATTERNS.questions)) curiosity += 22;
-    if (matchesAny(text, PATTERNS.curiosity)) curiosity += 20;
-    if (matchesAny(text, PATTERNS.surprise)) curiosity += 15;
-    if (/\b\d+\b/.test(text)) curiosity += 5;
-    if (/\bbut\b|\bhowever\b|\binstead\b/.test(text)) curiosity += 10;
+    if (
+        matchesAny(
+            text,
+            PATTERNS.questions
+        )
+    ) {
+        curiosity += 22;
+    }
+
+    if (
+        matchesAny(
+            text,
+            PATTERNS.curiosity
+        )
+    ) {
+        curiosity += 20;
+    }
+
+    if (
+        matchesAny(
+            text,
+            PATTERNS.surprise
+        )
+    ) {
+        curiosity += 15;
+    }
+
+    if (/\b\d+\b/.test(text)) {
+        curiosity += 5;
+    }
+
+    if (
+        /\bbut\b|\bhowever\b|\binstead\b/.test(text)
+    ) {
+        curiosity += 10;
+    }
 
     if (
         /\bhere are\b.*\b\d+\b/.test(text) &&
-        !matchesAny(text, PATTERNS.curiosity)
+        !matchesAny(
+            text,
+            PATTERNS.curiosity
+        )
     ) {
         curiosity -= 12;
     }
@@ -1034,36 +1437,77 @@ function analyzeFactors(originalText, goal) {
         curiosity -= 20;
     }
 
-    curiosity = clamp(curiosity, 10, 96);
+    curiosity =
+        clamp(
+            curiosity,
+            10,
+            96
+        );
 
 
     /* ---------- SPECIFICITY ---------- */
 
     let specificityScore = 20;
 
-    if (specificity.number) specificityScore += 18;
-    if (specificity.timeframe) specificityScore += 10;
-    if (specificity.audience) specificityScore += 13;
-    if (specificity.outcome) specificityScore += 12;
-    if (specificity.problem) specificityScore += 10;
-    if (specificity.product) specificityScore += 5;
-    if (specificity.credibility) specificityScore += 7;
-    if (specificity.category) specificityScore += 5;
+    if (specificity.number)
+        specificityScore += 18;
 
-    if (words.length < 4) specificityScore -= 10;
+    if (specificity.timeframe)
+        specificityScore += 10;
 
-    specificityScore = clamp(specificityScore, 8, 96);
+    if (specificity.audience)
+        specificityScore += 13;
+
+    if (specificity.outcome)
+        specificityScore += 12;
+
+    if (specificity.problem)
+        specificityScore += 10;
+
+    if (specificity.product)
+        specificityScore += 5;
+
+    if (specificity.credibility)
+        specificityScore += 7;
+
+    if (specificity.category)
+        specificityScore += 5;
+
+    if (words.length < 4)
+        specificityScore -= 10;
+
+    specificityScore =
+        clamp(
+            specificityScore,
+            8,
+            96
+        );
 
 
     /* ---------- PAYOFF ---------- */
 
     let payoff = 28;
 
-    if (specificity.outcome) payoff += 18;
-    if (specificity.problem) payoff += 13;
-    if (matchesAny(text, PATTERNS.actionable)) payoff += 15;
-    if (specificity.number) payoff += 6;
-    if (specificity.audience) payoff += 5;
+    if (specificity.outcome)
+        payoff += 18;
+
+    if (specificity.problem)
+        payoff += 13;
+
+    if (
+        matchesAny(
+            text,
+            PATTERNS.actionable
+        )
+    ) {
+        payoff += 15;
+    }
+
+    if (specificity.number)
+        payoff += 6;
+
+    if (specificity.audience)
+        payoff += 5;
 
     if (
         /\bhere are\b/.test(text) &&
@@ -1079,16 +1523,26 @@ function analyzeFactors(originalText, goal) {
         payoff -= 15;
     }
 
-    payoff = clamp(payoff, 10, 96);
+    payoff =
+        clamp(
+            payoff,
+            10,
+            96
+        );
 
 
     /* ---------- CLARITY ---------- */
 
     let clarity = 85;
 
-    if (words.length > 25) clarity -= 20;
-    if (words.length > 35) clarity -= 20;
-    if (words.length < 3) clarity -= 18;
+    if (words.length > 25)
+        clarity -= 20;
+
+    if (words.length > 35)
+        clarity -= 20;
+
+    if (words.length < 3)
+        clarity -= 18;
 
     if (
         /\bthings\b|\bsomething\b|\bstuff\b|\bvarious\b|\bsome\b/.test(text)
@@ -1102,30 +1556,94 @@ function analyzeFactors(originalText, goal) {
         clarity -= 8;
     }
 
-    clarity = clamp(clarity, 15, 98);
+    clarity =
+        clamp(
+            clarity,
+            15,
+            98
+        );
 
 
     /* ---------- SCROLL STOP ---------- */
 
     let scroll = 28;
 
-    if (matchesAny(text, PATTERNS.questions)) scroll += 15;
-    if (matchesAny(text, PATTERNS.surprise)) scroll += 16;
-    if (matchesAny(text, PATTERNS.curiosity)) scroll += 15;
-    if (matchesAny(text, PATTERNS.problems)) scroll += 10;
-    if (specificity.number) scroll += 7;
-    if (specificity.outcome) scroll += 8;
-    if (matchesAny(text, PATTERNS.opinions)) scroll += 12;
-    if (matchesAny(text, PATTERNS.debate)) scroll += 8;
+    if (
+        matchesAny(
+            text,
+            PATTERNS.questions
+        )
+    ) {
+        scroll += 15;
+    }
+
+    if (
+        matchesAny(
+            text,
+            PATTERNS.surprise
+        )
+    ) {
+        scroll += 16;
+    }
+
+    if (
+        matchesAny(
+            text,
+            PATTERNS.curiosity
+        )
+    ) {
+        scroll += 15;
+    }
+
+    if (
+        matchesAny(
+            text,
+            PATTERNS.problems
+        )
+    ) {
+        scroll += 10;
+    }
+
+    if (specificity.number)
+        scroll += 7;
+
+    if (specificity.outcome)
+        scroll += 8;
+
+    if (
+        matchesAny(
+            text,
+            PATTERNS.opinions
+        )
+    ) {
+        scroll += 12;
+    }
+
+    if (
+        matchesAny(
+            text,
+            PATTERNS.debate
+        )
+    ) {
+        scroll += 8;
+    }
 
     if (
         /\bhere are\b.*\b\d+\b/.test(text) &&
-        !matchesAny(text, PATTERNS.curiosity)
+        !matchesAny(
+            text,
+            PATTERNS.curiosity
+        )
     ) {
         scroll -= 10;
     }
 
-    scroll = clamp(scroll, 10, 97);
+    scroll =
+        clamp(
+            scroll,
+            10,
+            97
+        );
 
 
     /* ---------- GOAL ADJUSTMENT ---------- */
@@ -1171,44 +1689,67 @@ function analyzeFactors(originalText, goal) {
             clarity: 1.05,
             scroll: .95
         }
+
     };
 
-    const adjust = goalAdjustments[goal];
+
+    const adjust =
+        goalAdjustments[goal];
+
 
     return {
 
-        curiosity: clamp(Math.round(curiosity * adjust.curiosity), 10, 98),
+        curiosity:
+            clamp(
+                Math.round(
+                    curiosity *
+                    adjust.curiosity
+                ),
+                10,
+                98
+            ),
 
-        specificity: clamp(
-            Math.round(specificityScore * adjust.specificity),
-            10,
-            98
-        ),
+        specificity:
+            clamp(
+                Math.round(
+                    specificityScore *
+                    adjust.specificity
+                ),
+                10,
+                98
+            ),
 
-        payoff: clamp(
-            Math.round(payoff * adjust.payoff),
-            10,
-            98
-        ),
+        payoff:
+            clamp(
+                Math.round(
+                    payoff *
+                    adjust.payoff
+                ),
+                10,
+                98
+            ),
 
-        clarity: clamp(
-            Math.round(clarity * adjust.clarity),
-            10,
-            98
-        ),
+        clarity:
+            clamp(
+                Math.round(
+                    clarity *
+                    adjust.clarity
+                ),
+                10,
+                98
+            ),
 
-        scroll: clamp(
-            Math.round(scroll * adjust.scroll),
-            10,
-            98
-        )
+        scroll:
+            clamp(
+                Math.round(
+                    scroll *
+                    adjust.scroll
+                ),
+                10,
+                98
+            )
+
     };
-}
-
-
-function clamp(number, min, max) {
-
-    return Math.min(Math.max(number, min), max);
 
 }
 
@@ -1220,23 +1761,28 @@ function clamp(number, min, max) {
 function getStatus(score) {
 
     if (score >= 72) {
+
         return {
             label: "Strong",
             className: "strong"
         };
+
     }
 
     if (score >= 48) {
+
         return {
             label: "Could Improve",
             className: "medium"
         };
+
     }
 
     return {
         label: "Weak",
         className: "weak"
     };
+
 }
 
 
@@ -1244,13 +1790,16 @@ function getStatus(score) {
    FACTOR EXPLANATIONS
 ========================================================= */
 
-function factorExplanation(name, score, text) {
+function factorExplanation(name, score) {
 
-    const status = getStatus(score);
+    const status =
+        getStatus(score);
+
 
     const explanations = {
 
         curiosity: {
+
             strong:
                 "The hook creates a reason to keep watching through a question, tension, unexpected idea, or information gap.",
 
@@ -1259,9 +1808,12 @@ function factorExplanation(name, score, text) {
 
             weak:
                 "The topic is understandable, but there is little left unanswered. Give the viewer a specific reason to keep watching."
+
         },
 
+
         specificity: {
+
             strong:
                 "The hook contains concrete details such as a number, audience, problem, outcome, timeframe, or clear constraint.",
 
@@ -1270,9 +1822,12 @@ function factorExplanation(name, score, text) {
 
             weak:
                 "The hook is broad. Add something concrete — a number, audience, constraint, timeframe, result, or specific problem."
+
         },
 
+
         payoff: {
+
             strong:
                 "The viewer can quickly understand what useful result, answer, transformation, or insight they will get.",
 
@@ -1281,9 +1836,12 @@ function factorExplanation(name, score, text) {
 
             weak:
                 "The viewer knows the topic, but not what they will get from watching. Make the benefit or outcome explicit."
+
         },
 
+
         clarity: {
+
             strong:
                 "The idea can be understood quickly without unnecessary wording or complicated structure.",
 
@@ -1292,9 +1850,12 @@ function factorExplanation(name, score, text) {
 
             weak:
                 "The wording is too vague, long, or structurally unclear. Simplify it so the idea lands immediately."
+
         },
 
+
         scroll: {
+
             strong:
                 "The structure contains elements that can interrupt predictable scrolling, such as tension, specificity, surprise, or a strong problem.",
 
@@ -1303,10 +1864,14 @@ function factorExplanation(name, score, text) {
 
             weak:
                 "The opening resembles a generic content introduction. Add tension, specificity, surprise, or a clear consequence."
+
         }
+
     };
 
+
     return explanations[name][status.className];
+
 }
 
 
@@ -1321,67 +1886,117 @@ function goalFeedback(text, goal, scores) {
         reach: () => {
 
             if (scores.curiosity < 55) {
+
                 return "For Reach, the biggest opportunity is creating a stronger curiosity gap. Give viewers a reason to wonder what happens next rather than simply introducing the topic.";
+
             }
 
             if (scores.scroll < 60) {
+
                 return "For Reach, the structure could use a sharper pattern interrupt. A surprising opinion, contrast, mistake, or specific claim would make the opening less predictable.";
+
             }
 
             return "This is reasonably aligned with a Reach goal because it gives viewers a reason to continue and has some scroll-stopping structure.";
+
         },
+
 
         saves: () => {
 
             if (scores.specificity < 60) {
+
                 return "For Saves, make the promise more practical. Add a number, constraint, audience, timeframe, or clearly defined problem so viewers know exactly what information they can take away.";
+
             }
 
             if (scores.payoff < 60) {
+
                 return "For Saves, make the practical payoff more obvious. Tell viewers what useful information or outcome they will leave with.";
+
             }
 
             return "This is well aligned with Saves because the hook communicates useful information rather than relying entirely on entertainment.";
+
         },
+
 
         comments: () => {
 
-            if (!matchesAny(text, PATTERNS.questions) &&
-                !matchesAny(text, PATTERNS.opinions) &&
-                !matchesAny(text, PATTERNS.debate)) {
+            if (
+                !matchesAny(
+                    text,
+                    PATTERNS.questions
+                ) &&
+                !matchesAny(
+                    text,
+                    PATTERNS.opinions
+                ) &&
+                !matchesAny(
+                    text,
+                    PATTERNS.debate
+                )
+            ) {
 
                 return "For Comments, invite a reaction. A genuine question, opinion, disagreement, or relatable tension can give viewers something to respond to.";
+
             }
 
             return "The hook has elements that can encourage a reaction or opinion, which suits a Comments goal.";
+
         },
+
 
         sales: () => {
 
-            if (!matchesAny(text, PATTERNS.problems)) {
+            if (
+                !matchesAny(
+                    text,
+                    PATTERNS.problems
+                )
+            ) {
+
                 return "For Sales, connect the hook more directly to a problem the viewer wants solved. The product becomes more relevant when the opening establishes the problem first.";
+
             }
 
             if (scores.payoff < 65) {
+
                 return "For Sales, strengthen the benefit. Make the transformation or specific outcome more obvious so the viewer understands why the solution matters.";
+
             }
 
             return "The hook connects reasonably well to a Sales goal because it establishes a problem or benefit that can lead naturally into the offer.";
+
         },
+
 
         authority: () => {
 
-            if (!matchesAny(text, PATTERNS.credibility) &&
-                !matchesAny(text, PATTERNS.opinions)) {
+            if (
+                !matchesAny(
+                    text,
+                    PATTERNS.credibility
+                ) &&
+                !matchesAny(
+                    text,
+                    PATTERNS.opinions
+                )
+            ) {
 
                 return "For Authority, add a clear point of view, original insight, experience, evidence, or a specific observation. Expertise is easier to perceive when the hook says something concrete.";
+
             }
 
             return "The hook contains a point of view or credibility signal that can support an Authority positioning.";
+
         }
+
     };
 
+
     return feedback[goal]();
+
 }
 
 
@@ -1389,23 +2004,41 @@ function goalFeedback(text, goal, scores) {
    IMPROVED HOOK GENERATION
 ========================================================= */
 
-function generateHooks(original, goal) {
+function generateHooks(original) {
 
-    const cleaned = original.trim();
+    const cleaned =
+        original.trim();
 
-    /*
-       These are transformations, not unrelated topic generators.
-       They preserve the user's subject wherever possible.
-    */
 
-    const numberMatch = cleaned.match(/\b\d+\b/);
+    const numberMatch =
+        cleaned.match(/\b\d+\b/);
 
-    let baseTopic = cleaned
-        .replace(/^here are\s+/i, "")
-        .replace(/^some things\s+/i, "")
-        .replace(/^things\s+/i, "")
-        .replace(/[.!?]+$/, "")
-        .trim();
+
+    let baseTopic =
+        cleaned
+
+            .replace(
+                /^here are\s+/i,
+                ""
+            )
+
+            .replace(
+                /^some things\s+/i,
+                ""
+            )
+
+            .replace(
+                /^things\s+/i,
+                ""
+            )
+
+            .replace(
+                /[.!?]+$/,
+                ""
+            )
+
+            .trim();
+
 
     if (!baseTopic) {
         baseTopic = cleaned;
@@ -1416,20 +2049,33 @@ function generateHooks(original, goal) {
 
     let curiosityHook;
 
-    if (/^here are\s+\d+/i.test(cleaned)) {
+
+    if (
+        /^here are\s+\d+/i.test(cleaned)
+    ) {
 
         curiosityHook =
             `I expected to love these, but one of them completely surprised me: ${baseTopic.replace(/^\d+\s+/i, "")}.`;
 
-    } else if (matchesAny(normalize(cleaned), PATTERNS.problems)) {
+    }
+
+    else if (
+        matchesAny(
+            normalize(cleaned),
+            PATTERNS.problems
+        )
+    ) {
 
         curiosityHook =
             `The reason ${baseTopic.toLowerCase()} may not be working the way you think.`;
 
-    } else {
+    }
+
+    else {
 
         curiosityHook =
             `I wish I knew this before I started with ${baseTopic.toLowerCase()}.`;
+
     }
 
 
@@ -1437,18 +2083,27 @@ function generateHooks(original, goal) {
 
     let specificHook;
 
+
     if (numberMatch) {
 
         specificHook =
             `${numberMatch[0]} ${baseTopic.replace(
-                new RegExp("^" + numberMatch[0] + "\\s*", "i"),
+                new RegExp(
+                    "^" +
+                    numberMatch[0] +
+                    "\\s*",
+                    "i"
+                ),
                 ""
             )} — what I'd actually recommend.`;
 
-    } else {
+    }
+
+    else {
 
         specificHook =
             `The ${baseTopic.toLowerCase()} I'd actually recommend if you want a practical starting point.`;
+
     }
 
 
@@ -1456,37 +2111,52 @@ function generateHooks(original, goal) {
 
     let contrarianHook;
 
-    if (/skincare/i.test(cleaned)) {
+
+    if (
+        /skincare/i.test(cleaned)
+    ) {
 
         contrarianHook =
-            `You probably don't need more skincare — you need to stop buying the wrong products.`;
+            "You probably don't need more skincare — you need to stop buying the wrong products.";
 
-    } else if (/money|business|marketing|content|instagram/i.test(cleaned)) {
+    }
+
+    else if (
+        /money|business|marketing|content|instagram/i.test(cleaned)
+    ) {
 
         contrarianHook =
             `You don't need more ${baseTopic.toLowerCase()} — you need to approach it differently.`;
 
-    } else {
+    }
+
+    else {
 
         contrarianHook =
             `More ${baseTopic.toLowerCase()} isn't always better. Here's what I'd focus on instead.`;
+
     }
 
 
     return [
+
         {
             label: "Curiosity",
             text: curiosityHook
         },
+
         {
             label: "Specific",
             text: specificHook
         },
+
         {
             label: "Contrarian / Pattern Interrupt",
             text: contrarianHook
         }
+
     ];
+
 }
 
 
@@ -1496,52 +2166,78 @@ function generateHooks(original, goal) {
 
 function getOverall(scores) {
 
-    const values = Object.values(scores);
+    const values =
+        Object.values(scores);
+
 
     const average =
         Math.round(
-            values.reduce((a, b) => a + b, 0) / values.length
+            values.reduce(
+                (a, b) => a + b,
+                0
+            ) / values.length
         );
+
 
     if (average >= 78) {
 
         return {
+
             score: average,
+
             title: "Strong hook",
+
             text:
                 "This already has several strong structural elements. I'd focus on delivering on the promise rather than changing the hook just for the sake of optimization."
+
         };
 
     }
+
 
     if (average >= 60) {
 
         return {
+
             score: average,
+
             title: "Good foundation",
+
             text:
                 "The idea is workable, but one or two structural improvements could make the opening more compelling and more clearly aligned with your goal."
+
         };
 
     }
+
 
     if (average >= 40) {
 
         return {
+
             score: average,
+
             title: "Needs sharpening",
+
             text:
                 "The topic has potential, but the hook currently relies too much on simply introducing the subject. Give viewers a clearer reason to continue."
+
         };
 
     }
 
+
     return {
+
         score: average,
+
         title: "Weak opening",
+
         text:
             "The topic may be useful, but the opening doesn't yet communicate a strong reason to stop, care, or continue watching."
+
     };
+
 }
 
 
@@ -1549,29 +2245,69 @@ function getOverall(scores) {
    WHAT'S WORKING
 ========================================================= */
 
-function getWorking(scores, text) {
+function getWorking(scores) {
 
     const strengths = [];
 
-    if (scores.clarity >= 70)
-        strengths.push("The core idea is easy to understand quickly.");
 
-    if (scores.curiosity >= 70)
-        strengths.push("The hook creates an information gap or open question.");
+    if (scores.clarity >= 70) {
 
-    if (scores.specificity >= 70)
-        strengths.push("The hook gives the viewer concrete information.");
+        strengths.push(
+            "The core idea is easy to understand quickly."
+        );
 
-    if (scores.payoff >= 70)
-        strengths.push("The viewer can understand the benefit of watching.");
+    }
 
-    if (scores.scroll >= 70)
-        strengths.push("The structure contains useful scroll-stopping elements.");
 
-    if (strengths.length === 0)
-        strengths.push("The topic itself is identifiable, giving you a clear foundation to strengthen.");
+    if (scores.curiosity >= 70) {
 
-    return strengths.slice(0, 2).join(" ");
+        strengths.push(
+            "The hook creates an information gap or open question."
+        );
+
+    }
+
+
+    if (scores.specificity >= 70) {
+
+        strengths.push(
+            "The hook gives the viewer concrete information."
+        );
+
+    }
+
+
+    if (scores.payoff >= 70) {
+
+        strengths.push(
+            "The viewer can understand the benefit of watching."
+        );
+
+    }
+
+
+    if (scores.scroll >= 70) {
+
+        strengths.push(
+            "The structure contains useful scroll-stopping elements."
+        );
+
+    }
+
+
+    if (strengths.length === 0) {
+
+        strengths.push(
+            "The topic itself is identifiable, giving you a clear foundation to strengthen."
+        );
+
+    }
+
+
+    return strengths
+        .slice(0, 2)
+        .join(" ");
+
 }
 
 
@@ -1583,20 +2319,51 @@ function getWeakness(scores, text, goal) {
 
     const weaknesses = [];
 
-    if (scores.curiosity < 55)
-        weaknesses.push("There isn't enough unanswered tension.");
 
-    if (scores.specificity < 55)
-        weaknesses.push("The idea is too broad.");
+    if (scores.curiosity < 55) {
 
-    if (scores.payoff < 55)
-        weaknesses.push("The viewer's benefit isn't obvious.");
+        weaknesses.push(
+            "There isn't enough unanswered tension."
+        );
 
-    if (scores.scroll < 55)
-        weaknesses.push("The opening is relatively predictable.");
+    }
 
-    if (scores.clarity < 55)
-        weaknesses.push("The wording could be simplified.");
+
+    if (scores.specificity < 55) {
+
+        weaknesses.push(
+            "The idea is too broad."
+        );
+
+    }
+
+
+    if (scores.payoff < 55) {
+
+        weaknesses.push(
+            "The viewer's benefit isn't obvious."
+        );
+
+    }
+
+
+    if (scores.scroll < 55) {
+
+        weaknesses.push(
+            "The opening is relatively predictable."
+        );
+
+    }
+
+
+    if (scores.clarity < 55) {
+
+        weaknesses.push(
+            "The wording could be simplified."
+        );
+
+    }
+
 
     if (weaknesses.length === 0) {
 
@@ -1605,31 +2372,108 @@ function getWeakness(scores, text, goal) {
             goal,
             scores
         );
+
     }
 
-    return weaknesses.slice(0, 2).join(" ") +
+
+    return (
+        weaknesses
+            .slice(0, 2)
+            .join(" ") +
         " " +
-        goalFeedback(normalize(text), goal, scores);
+        goalFeedback(
+            normalize(text),
+            goal,
+            scores
+        )
+    );
+
 }
 
 
 /* =========================================================
-   RENDER RESULTS
+   ESCAPE HTML
 ========================================================= */
 
-function renderResults(hook, goal, scores) {
+function escapeHTML(value) {
 
-    const overall = getOverall(scores);
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   RESULTS
+========================================================= */
+
+function renderResults(
+    hook,
+    goal,
+    scores
+) {
+
+    const overall =
+        getOverall(scores);
+
 
     const factors = [
-        ["Curiosity", "curiosity"],
-        ["Specificity", "specificity"],
-        ["Payoff", "payoff"],
-        ["Clarity", "clarity"],
-        ["Scroll-stop potential", "scroll"]
+
+        [
+            "Curiosity",
+            "curiosity"
+        ],
+
+        [
+            "Specificity",
+            "specificity"
+        ],
+
+        [
+            "Payoff",
+            "payoff"
+        ],
+
+        [
+            "Clarity",
+            "clarity"
+        ],
+
+        [
+            "Scroll-stop potential",
+            "scroll"
+        ]
+
     ];
 
-    const improvements = generateHooks(hook, goal);
+
+    const improvements =
+        generateHooks(hook);
+
 
     document.getElementById("app").innerHTML = `
 
@@ -1638,12 +2482,19 @@ function renderResults(hook, goal, scores) {
             <div class="results-header">
 
                 <div>
-                    <div class="eyebrow">Hook Diagnosis</div>
+
+                    <div class="eyebrow">
+                        Hook Diagnosis
+                    </div>
 
                     <h2 class="results-title">
-                        ${escapeHTML(overall.title)}
+                        ${escapeHTML(
+                            overall.title
+                        )}
                     </h2>
+
                 </div>
+
 
                 <div class="overall">
 
@@ -1662,48 +2513,66 @@ function renderResults(hook, goal, scores) {
 
             <div class="factor-grid">
 
-                ${factors.map(([label, key]) => {
+                ${factors.map(
+                    ([label, key]) => {
 
-                    const score = scores[key];
-                    const status = getStatus(score);
+                        const score =
+                            scores[key];
 
-                    return `
+                        const status =
+                            getStatus(score);
 
-                        <div class="factor-card">
 
-                            <div class="factor-top">
+                        return `
 
-                                <span class="factor-name">
-                                    ${label}
-                                </span>
+                            <div class="factor-card">
 
-                                <span class="status ${status.className}">
-                                    ${status.label}
-                                </span>
+                                <div class="factor-top">
+
+                                    <span class="factor-name">
+                                        ${label}
+                                    </span>
+
+                                    <span
+                                        class="status ${status.className}"
+                                    >
+                                        ${status.label}
+                                    </span>
+
+                                </div>
+
+
+                                <div class="factor-description">
+
+                                    ${factorExplanation(
+                                        key,
+                                        score
+                                    )}
+
+                                </div>
+
+
+                                <div class="meter">
+
+                                    <div
+                                        class="meter-fill"
+                                        style="width:${score}%"
+                                    ></div>
+
+                                </div>
 
                             </div>
 
-                            <div class="factor-description">
-                                ${factorExplanation(key, score, hook)}
-                            </div>
+                        `;
 
-                            <div class="meter">
-                                <div
-                                    class="meter-fill"
-                                    style="width:${score}%"
-                                ></div>
-                            </div>
-
-                        </div>
-
-                    `;
-
-                }).join("")}
+                    }
+                ).join("")}
 
             </div>
 
 
             <div class="feedback-section">
+
 
                 <div class="feedback-card">
 
@@ -1712,9 +2581,11 @@ function renderResults(hook, goal, scores) {
                     </div>
 
                     <div class="feedback-text">
+
                         ${escapeHTML(
-                            getWorking(scores, hook)
+                            getWorking(scores)
                         )}
+
                     </div>
 
                 </div>
@@ -1727,6 +2598,7 @@ function renderResults(hook, goal, scores) {
                     </div>
 
                     <div class="feedback-text">
+
                         ${escapeHTML(
                             getWeakness(
                                 scores,
@@ -1734,6 +2606,7 @@ function renderResults(hook, goal, scores) {
                                 goal
                             )
                         )}
+
                     </div>
 
                 </div>
@@ -1742,10 +2615,15 @@ function renderResults(hook, goal, scores) {
                 <div class="feedback-card">
 
                     <div class="feedback-heading">
-                        💡 Goal: ${GOALS[goal].icon} ${GOALS[goal].name}
+
+                        💡 Goal:
+                        ${GOALS[goal].icon}
+                        ${GOALS[goal].name}
+
                     </div>
 
                     <div class="feedback-text">
+
                         ${escapeHTML(
                             goalFeedback(
                                 normalize(hook),
@@ -1753,9 +2631,11 @@ function renderResults(hook, goal, scores) {
                                 scores
                             )
                         )}
+
                     </div>
 
                 </div>
+
 
             </div>
 
@@ -1765,21 +2645,27 @@ function renderResults(hook, goal, scores) {
             </h3>
 
 
-            ${improvements.map(option => `
+            ${improvements.map(
+                option => `
 
-                <div class="hook-option">
+                    <div class="hook-option">
 
-                    <div class="option-label">
-                        ${escapeHTML(option.label)}
+                        <div class="option-label">
+                            ${escapeHTML(
+                                option.label
+                            )}
+                        </div>
+
+                        <div class="option-text">
+                            ${escapeHTML(
+                                option.text
+                            )}
+                        </div>
+
                     </div>
 
-                    <div class="option-text">
-                        ${escapeHTML(option.text)}
-                    </div>
-
-                </div>
-
-            `).join("")}
+                `
+            ).join("")}
 
 
             <button
@@ -1789,8 +2675,11 @@ function renderResults(hook, goal, scores) {
                 ↻ Check Another Hook
             </button>
 
+
         </div>
+
     `;
+
 }
 
 
@@ -1801,30 +2690,47 @@ function renderResults(hook, goal, scores) {
 function analyzeHook() {
 
     const input =
-        document.getElementById("hookInput");
+        document.getElementById(
+            "hookInput"
+        );
+
 
     const error =
-        document.getElementById("error");
+        document.getElementById(
+            "error"
+        );
 
-    const hook = input.value.trim();
+
+    const hook =
+        input.value.trim();
+
 
     error.innerHTML = "";
+
 
     if (!hook) {
 
         error.innerHTML =
-            `<div class="error">Paste a hook first.</div>`;
+            `<div class="error">
+                Paste a hook first.
+            </div>`;
 
         return;
+
     }
+
 
     if (!selectedGoal) {
 
         error.innerHTML =
-            `<div class="error">Choose a goal first.</div>`;
+            `<div class="error">
+                Choose a goal first.
+            </div>`;
 
         return;
+
     }
+
 
     const scores =
         analyzeFactors(
@@ -1832,11 +2738,13 @@ function analyzeHook() {
             selectedGoal
         );
 
+
     renderResults(
         hook,
         selectedGoal,
         scores
     );
+
 }
 
 
@@ -1850,21 +2758,6 @@ function resetWidget() {
 
     renderInitial();
 
-}
-
-
-/* =========================================================
-   HTML ESCAPE
-========================================================= */
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
 }
 
 
